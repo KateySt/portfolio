@@ -86,10 +86,14 @@ body::before {
   color: var(--color-ink);
 }
 
-:focus-visible {
-  outline: 3px solid var(--color-lavender-deep);
-  outline-offset: 3px;
-  border-radius: 0.5rem;
+/* in the base layer so utilities (e.g. focus-visible:outline-none) can override it —
+   unlayered CSS always beats Tailwind's layered utilities */
+@layer base {
+  :focus-visible {
+    outline: 3px solid var(--color-lavender-deep);
+    outline-offset: 3px;
+    border-radius: 0.5rem;
+  }
 }
 
 @utility container-page {

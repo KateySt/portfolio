@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
-import { input, usePrefs } from "@/lib/interaction";
+import { input, prefs, usePrefs } from "@/lib/interaction";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -38,6 +38,18 @@ export function SmoothScroll() {
       gsap.ticker.add(tick);
       gsap.ticker.lagSmoothing(0);
     }
+
+    // Lenis drives the wheel itself, so the dialog's scroll lock can't stop it:
+    // pause the page while the ⌘K palette is open
+    let wasOpen = prefs.get().paletteOpen;
+    if (wasOpen) lenis?.stop(); // palette was opened by the very keypress that booted us
+    const unsubPalette = prefs.subscribe(() => {
+      const open = prefs.get().paletteOpen;
+      if (open === wasOpen) return;
+      wasOpen = open;
+      if (open) lenis?.stop();
+      else lenis?.start();
+    });
 
     // scroll velocity (works with and without Lenis)
     let lastY = window.scrollY;
@@ -117,6 +129,7 @@ export function SmoothScroll() {
     document.addEventListener("click", onClick);
 
     return () => {
+      unsubPalette();
       ctx.revert();
       root.classList.remove("motion-ready");
       window.removeEventListener("scroll", onScroll);

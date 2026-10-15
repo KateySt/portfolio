@@ -51,9 +51,14 @@ export default function PaletteDialog() {
       <Command.Input
         autoFocus
         placeholder="Where to? Type a command…"
-        className="w-full border-b border-ink/10 bg-transparent px-6 py-5 text-lg outline-none placeholder:text-ink-soft/70"
+        // the caret already shows focus; the global focus ring drew a purple bar under the field
+        className="w-full border-b border-ink/10 bg-transparent px-6 py-5 text-lg outline-none placeholder:text-ink-soft/70 focus-visible:outline-none"
       />
-      <Command.List className="max-h-[min(60svh,26rem)] overflow-y-auto overscroll-contain p-3">
+      {/* data-lenis-prevent: let the wheel scroll this list natively instead of the page */}
+      <Command.List
+        data-lenis-prevent
+        className="max-h-[min(60svh,26rem)] overflow-y-auto overscroll-contain p-3"
+      >
         <Command.Empty className="px-4 py-8 text-center text-ink-soft">Nothing here… yet ✦</Command.Empty>
 
         <Group heading="Go to">
