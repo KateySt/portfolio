@@ -52,12 +52,14 @@ export default function PaletteDialog() {
         autoFocus
         placeholder="Where to? Type a command…"
         // the caret already shows focus; the global focus ring drew a purple bar under the field
-        className="w-full border-b border-ink/10 bg-transparent px-6 py-5 text-lg outline-none placeholder:text-ink-soft/70 focus-visible:outline-none"
+        className="w-full bg-transparent px-6 py-5 text-lg outline-none placeholder:text-ink-soft/70 focus-visible:outline-none"
       />
-      {/* data-lenis-prevent: let the wheel scroll this list natively instead of the page */}
+      <div aria-hidden className="mx-6 h-px bg-ink/10" />
+      {/* data-lenis-prevent: let the wheel scroll this list natively instead of the page.
+          The mask fades items out at the edges instead of slicing them at the divider. */}
       <Command.List
         data-lenis-prevent
-        className="max-h-[min(60svh,26rem)] overflow-y-auto overscroll-contain p-3"
+        className="max-h-[min(60svh,26rem)] overflow-y-auto overscroll-contain p-3 [mask-image:linear-gradient(to_bottom,transparent,black_14px,black_calc(100%-14px),transparent)]"
       >
         <Command.Empty className="px-4 py-8 text-center text-ink-soft">Nothing here… yet ✦</Command.Empty>
 
