@@ -4,7 +4,7 @@
 import type { Dictionary } from "@/i18n/dictionary";
 
 export const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://kateryna-stetsenko.vercel.app"
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://kateystetsenko.com"
 ).replace(/\/$/, "");
 
 export type Accent = "lavender" | "peach" | "mint" | "sky" | "butter" | "blush";
