@@ -1,5 +1,5 @@
 import { markdownResponse, profileMarkdown } from "@/lib/agent-docs";
 
-export function GET() {
-  return markdownResponse(profileMarkdown());
+export async function GET() {
+  return markdownResponse(await profileMarkdown());
 }

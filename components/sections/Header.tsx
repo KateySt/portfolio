@@ -1,19 +1,20 @@
 import Link from "next/link";
+import { getDictionary } from "@/i18n/dictionary";
 import { PaletteTrigger } from "../CommandPalette";
 
-const links = [
-  { href: "/#about", label: "About" },
-  { href: "/#skills", label: "Skills" },
-  { href: "/#projects", label: "Work" },
-  { href: "/#agents", label: "For AI" },
-  { href: "/#contact", label: "Contact" },
-];
-
-export function Header() {
+export async function Header() {
+  const { nav } = await getDictionary();
+  const links = [
+    { href: "/#about", label: nav.about },
+    { href: "/#skills", label: nav.skills },
+    { href: "/#projects", label: nav.work },
+    { href: "/#agents", label: nav.forAi },
+    { href: "/#contact", label: nav.contact },
+  ];
   return (
     <header className="fixed inset-x-0 top-0 z-50 pt-[max(0.75rem,env(safe-area-inset-top))]">
       <nav
-        aria-label="Main"
+        aria-label={nav.label}
         className="container-page flex items-center justify-between gap-3"
       >
         <Link
@@ -36,7 +37,7 @@ export function Header() {
               </li>
             ))}
           </ul>
-          <PaletteTrigger />
+          <PaletteTrigger label={nav.openMenu} menuText={nav.menu} />
         </div>
       </nav>
     </header>

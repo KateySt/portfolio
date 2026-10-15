@@ -1,8 +1,11 @@
-import { projects } from "@/content/profile";
+import { getContent } from "@/content/content";
+import { fmt } from "@/i18n/format";
 import { RobotAnchor } from "../RobotAnchor";
 import { Eyebrow, Pill, SectionTitle, accentBg, accentSoft } from "../ui";
 
-export function Projects() {
+export async function Projects() {
+  const { dict, projects } = await getContent();
+  const t = dict.projects;
   return (
     <section
       id="projects"
@@ -10,8 +13,8 @@ export function Projects() {
       aria-labelledby="projects-title"
       className="container-page scroll-mt-24 py-20 sm:py-28 short:py-14"
     >
-      <Eyebrow accent="peach">Selected work</Eyebrow>
-      <SectionTitle id="projects-title">Projects with numbers, not just buzzwords.</SectionTitle>
+      <Eyebrow accent="peach">{t.eyebrow}</Eyebrow>
+      <SectionTitle id="projects-title">{t.title}</SectionTitle>
 
       <div className="mt-12 grid gap-8 md:grid-cols-2 md:gap-10">
         {projects.map((p, i) => (
@@ -64,20 +67,20 @@ export function Projects() {
 
                 <dl className="mt-6 grid grid-cols-3 gap-3 border-t border-ink/10 pt-5 text-sm">
                   <div>
-                    <dt className="text-ink-soft">Role</dt>
+                    <dt className="text-ink-soft">{t.role}</dt>
                     <dd className="font-semibold">{p.role}</dd>
                   </div>
                   <div>
-                    <dt className="text-ink-soft">Duration</dt>
+                    <dt className="text-ink-soft">{t.duration}</dt>
                     <dd className="font-semibold">{p.duration}</dd>
                   </div>
                   <div>
-                    <dt className="text-ink-soft">Team</dt>
+                    <dt className="text-ink-soft">{t.team}</dt>
                     <dd className="font-semibold">{p.team}</dd>
                   </div>
                 </dl>
 
-                <ul className="mt-5 flex flex-wrap gap-1.5" aria-label={`${p.name} tech stack`}>
+                <ul className="mt-5 flex flex-wrap gap-1.5" aria-label={fmt(t.stackLabel, { name: p.name })}>
                   {p.stack.map((s) => (
                     <li key={s}>
                       <Pill accent={p.accent} className="!text-xs">{s}</Pill>

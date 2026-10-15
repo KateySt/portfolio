@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { SITE_URL } from "@/content/profile";
+import { SITE_URL } from "@/content/data";
 import { getPublishedNotes } from "@/lib/notes";
 
 export default function sitemap(): MetadataRoute.Sitemap {

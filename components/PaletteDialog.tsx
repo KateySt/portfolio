@@ -2,21 +2,14 @@
 
 import { useRouter } from "next/navigation";
 import { Command } from "cmdk";
-import { mcpUrl, profile } from "@/content/profile";
+import { mcpUrl, person } from "@/content/data";
+import type { Dictionary } from "@/i18n/dictionary";
 import { haptic, prefs, pushImpulse, setMotionOverride, usePrefs } from "@/lib/interaction";
 
-const sections = [
-  { id: "top", label: "Home" },
-  { id: "about", label: "About me" },
-  { id: "skills", label: "Skills" },
-  { id: "projects", label: "Projects" },
-  { id: "education", label: "Education & certifications" },
-  { id: "agents", label: "For AI agents (MCP)" },
-  { id: "contact", label: "Contact" },
-];
+const sectionIds = ["top", "about", "skills", "projects", "education", "agents", "contact"] as const;
 
-/** Heavy part of the ⌘K menu (cmdk + dialog) — loaded on first open. */
-export default function PaletteDialog() {
+/** Heavy part of the ⌘K menu (cmdk + dialog) — loaded on first open. Strings arrive as props. */
+export default function PaletteDialog({ t }: { t: Dictionary["palette"] }) {
   const open = usePrefs((p) => p.paletteOpen);
   const motion = usePrefs((p) => p.motion);
   const router = useRouter();
@@ -41,7 +34,7 @@ export default function PaletteDialog() {
     <Command.Dialog
       open={open}
       onOpenChange={(o) => prefs.set({ paletteOpen: o })}
-      label="Command menu"
+      label={t.label}
       overlayClassName="fixed inset-0 z-[80] bg-ink/25 backdrop-blur-sm"
       contentClassName="fixed z-[90] w-full overflow-hidden bg-cream shadow-lift outline-none focus-visible:outline-none
         bottom-0 left-0 rounded-t-[2rem] pb-[env(safe-area-inset-bottom)]
@@ -50,7 +43,7 @@ export default function PaletteDialog() {
       <div className="mx-auto mt-3 h-1.5 w-12 rounded-full bg-ink/15 sm:hidden" aria-hidden />
       <Command.Input
         autoFocus
-        placeholder="Where to? Type a command…"
+        placeholder={t.placeholder}
         // the caret already shows focus; the global focus ring drew a purple bar under the field
         className="w-full bg-transparent px-6 py-5 text-lg outline-none placeholder:text-ink-soft/70 focus-visible:outline-none"
       />
@@ -61,49 +54,49 @@ export default function PaletteDialog() {
         data-lenis-prevent
         className="max-h-[min(60svh,26rem)] overflow-y-auto overscroll-contain p-3 [mask-image:linear-gradient(to_bottom,transparent,black_14px,black_calc(100%-14px),transparent)]"
       >
-        <Command.Empty className="px-4 py-8 text-center text-ink-soft">Nothing here… yet ✦</Command.Empty>
+        <Command.Empty className="px-4 py-8 text-center text-ink-soft">{t.empty}</Command.Empty>
 
-        <Group heading="Go to">
-          {sections.map((s) => (
-            <Item key={s.id} onSelect={go(s.id)} icon="→">
-              {s.label}
+        <Group heading={t.groups.goTo}>
+          {sectionIds.map((id) => (
+            <Item key={id} onSelect={go(id)} icon="→">
+              {t.sections[id]}
             </Item>
           ))}
           <Item onSelect={run(() => router.push("/notes"))} icon="✎">
-            Notes & case studies
+            {t.notes}
           </Item>
         </Group>
 
-        <Group heading="Contact">
-          <Item onSelect={copy(profile.contact.email)} icon="@">
-            Copy email
+        <Group heading={t.groups.contact}>
+          <Item onSelect={copy(person.contact.email)} icon="@">
+            {t.copyEmail}
           </Item>
-          <Item onSelect={run(() => window.open(profile.contact.linkedin, "_blank", "noopener"))} icon="in">
-            Open LinkedIn
+          <Item onSelect={run(() => window.open(person.contact.linkedin, "_blank", "noopener"))} icon="in">
+            {t.openLinkedIn}
           </Item>
           <Item
             onSelect={run(() => {
               const a = document.createElement("a");
-              a.href = profile.contact.cv;
+              a.href = person.contact.cv;
               a.download = "";
               a.click();
             })}
             icon="↓"
           >
-            Download CV (PDF)
+            {t.downloadCv}
           </Item>
         </Group>
 
-        <Group heading="For AI agents">
+        <Group heading={t.groups.agents}>
           <Item onSelect={copy(mcpUrl())} icon="⌁">
-            Copy MCP server URL
+            {t.copyMcp}
           </Item>
           <Item onSelect={run(() => window.open("/llms.txt", "_blank"))} icon="≡">
-            Open llms.txt
+            {t.openLlms}
           </Item>
         </Group>
 
-        <Group heading="Fun">
+        <Group heading={t.groups.fun}>
           <Item
             onSelect={run(() => {
               pushImpulse("jump", 1.2);
@@ -111,10 +104,10 @@ export default function PaletteDialog() {
             })}
             icon="✦"
           >
-            Make the robot jump
+            {t.jump}
           </Item>
           <Item onSelect={run(() => setMotionOverride(!motion))} icon={motion ? "◐" : "◑"}>
-            {motion ? "Turn animations off" : "Turn animations on"}
+            {motion ? t.motionOff : t.motionOn}
           </Item>
         </Group>
       </Command.List>

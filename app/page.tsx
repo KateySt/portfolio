@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { SITE_URL, certifications, education, profile, skills } from "@/content/profile";
+import { SITE_URL } from "@/content/data";
+import { getContent } from "@/content/content";
+import { getDictionary } from "@/i18n/dictionary";
 import { getPublishedNotes } from "@/lib/notes";
 import { Header } from "@/components/sections/Header";
 import { Hero } from "@/components/sections/Hero";
@@ -13,17 +15,18 @@ import { Footer } from "@/components/sections/Footer";
 import { JsonLd } from "@/components/JsonLd";
 import { Eyebrow } from "@/components/ui";
 
-function LatestNotes() {
+async function LatestNotes() {
   const notes = getPublishedNotes().slice(0, 3);
   if (notes.length === 0) return null;
+  const t = (await getDictionary()).notes;
   return (
     <section id="notes" data-tint="peach" aria-labelledby="notes-title" className="container-page scroll-mt-24 py-16">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <Eyebrow accent="peach">Latest notes</Eyebrow>
-          <h2 id="notes-title" className="font-display text-3xl font-bold sm:text-4xl">Things I wrote down</h2>
+          <Eyebrow accent="peach">{t.latestEyebrow}</Eyebrow>
+          <h2 id="notes-title" className="font-display text-3xl font-bold sm:text-4xl">{t.latestTitle}</h2>
         </div>
-        <Link href="/notes" className="min-h-11 font-semibold underline underline-offset-4">All notes →</Link>
+        <Link href="/notes" className="min-h-11 font-semibold underline underline-offset-4">{t.allNotes}</Link>
       </div>
       <ul className="mt-8 grid gap-5 md:grid-cols-3">
         {notes.map((n) => (
@@ -39,7 +42,8 @@ function LatestNotes() {
   );
 }
 
-export default function Home() {
+export default async function Home() {
+  const { profile, skills, education, certifications } = await getContent();
   const sameAs = [profile.contact.linkedin, profile.contact.github].filter(Boolean);
   return (
     <>

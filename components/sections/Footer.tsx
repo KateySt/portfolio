@@ -1,16 +1,18 @@
 import Link from "next/link";
-import { profile } from "@/content/profile";
+import { person } from "@/content/data";
+import { getDictionary } from "@/i18n/dictionary";
+import { fmt } from "@/i18n/format";
 
-export function Footer() {
+export async function Footer() {
+  const { footer } = await getDictionary();
   return (
     <footer className="container-page flex flex-col items-center justify-between gap-3 pb-[max(2rem,env(safe-area-inset-bottom))] pt-6 text-sm text-ink-soft sm:flex-row">
-      <p>
-        © 2026 {profile.name}. Made with marshmallows, Next.js &amp; three.js.
-      </p>
+      {/* year is static on purpose: a Date() here would make the page dynamic */}
+      <p>{fmt(footer.credits, { year: 2026, name: person.name })}</p>
       <p className="flex gap-4">
-        <Link href="/notes" className="underline-offset-4 hover:underline">Notes</Link>
+        <Link href="/notes" className="underline-offset-4 hover:underline">{footer.notes}</Link>
         <a href="/llms.txt" className="underline-offset-4 hover:underline">llms.txt</a>
-        <a href={profile.contact.linkedin} className="underline-offset-4 hover:underline" target="_blank" rel="noopener noreferrer">
+        <a href={person.contact.linkedin} className="underline-offset-4 hover:underline" target="_blank" rel="noopener noreferrer">
           LinkedIn
         </a>
       </p>

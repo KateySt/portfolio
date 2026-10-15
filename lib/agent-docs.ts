@@ -1,16 +1,13 @@
-import {
-  SITE_URL,
-  certifications,
-  education,
-  mcpUrl,
-  profile,
-  projects,
-  skills,
-} from "@/content/profile";
+import { SITE_URL, mcpUrl } from "@/content/data";
+import { getContent } from "@/content/content";
 import { getNoteMarkdown, getPublishedNotes } from "./notes";
 
+// Agent-facing documents: the structure/headings stay in English (machine-readable),
+// all profile content comes from the default-locale dictionary.
+
 /** Full profile as clean markdown — used by /index.md, /llms-full.txt and MCP. */
-export function profileMarkdown(): string {
+export async function profileMarkdown(): Promise<string> {
+  const { profile, skills, projects, education, certifications } = await getContent();
   const c = profile.contact;
   return [
     `# ${profile.name} — ${profile.role}`,
@@ -61,7 +58,8 @@ export function profileMarkdown(): string {
 }
 
 /** https://llmstxt.org — short index for agents. */
-export function llmsTxt(): string {
+export async function llmsTxt(): Promise<string> {
+  const { profile } = await getContent();
   const notes = getPublishedNotes();
   return [
     `# ${profile.name}`,
@@ -100,7 +98,7 @@ export async function llmsFullTxt(): Promise<string> {
   const bodies = await Promise.all(
     notes.map(async (n) => `## Note: ${n.title}\n\n_${n.date}_ · ${SITE_URL}/notes/${n.slug}\n\n${await getNoteMarkdown(n.slug)}\n`),
   );
-  return [profileMarkdown(), ...bodies].join("\n---\n\n");
+  return [await profileMarkdown(), ...bodies].join("\n---\n\n");
 }
 
 export function markdownResponse(body: string) {

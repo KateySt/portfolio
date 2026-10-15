@@ -1,8 +1,10 @@
-import { skills } from "@/content/profile";
+import { getContent } from "@/content/content";
 import { RobotAnchor } from "../RobotAnchor";
 import { Eyebrow, SectionTitle, accentBg, accentSoft } from "../ui";
 
-export function Skills() {
+export async function Skills() {
+  const { dict, skills } = await getContent();
+  const t = dict.skills;
   return (
     <section
       id="skills"
@@ -12,8 +14,8 @@ export function Skills() {
     >
       <div className="grid items-end gap-6 lg:grid-cols-[1fr_auto]">
         <div>
-          <Eyebrow accent="mint">Toolbox</Eyebrow>
-          <SectionTitle id="skills-title">Building blocks I play with every day.</SectionTitle>
+          <Eyebrow accent="mint">{t.eyebrow}</Eyebrow>
+          <SectionTitle id="skills-title">{t.title}</SectionTitle>
         </div>
         <RobotAnchor
           pose="build"
@@ -24,7 +26,7 @@ export function Skills() {
 
       <div className="mt-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
         {skills.map((g, gi) => (
-          <div key={g.title} data-reveal>
+          <div key={g.id} data-reveal>
             <article
               data-tilt
               className="card-soft h-full p-6 transition-transform duration-300 ease-out touch:active:scale-[0.98]"

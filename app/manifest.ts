@@ -1,11 +1,14 @@
 import type { MetadataRoute } from "next";
-import { profile } from "@/content/profile";
+import { getContent } from "@/content/content";
+import { defaultLocale } from "@/i18n/config";
 
-export default function manifest(): MetadataRoute.Manifest {
+export default async function manifest(): Promise<MetadataRoute.Manifest> {
+  const { dict, profile } = await getContent();
   return {
     name: `${profile.name} — ${profile.role}`,
-    short_name: "Kateryna",
+    short_name: dict.meta.appleTitle,
     description: profile.tagline,
+    lang: defaultLocale,
     start_url: "/",
     display: "standalone",
     background_color: "#fff8f1",

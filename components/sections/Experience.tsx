@@ -1,8 +1,10 @@
-import { certifications, education } from "@/content/profile";
+import { getContent } from "@/content/content";
 import { RobotAnchor } from "../RobotAnchor";
 import { Eyebrow, SectionTitle } from "../ui";
 
-export function Experience() {
+export async function Experience() {
+  const { dict, education, certifications } = await getContent();
+  const t = dict.education;
   return (
     <section
       id="education"
@@ -11,11 +13,11 @@ export function Experience() {
       className="container-page grid scroll-mt-24 gap-12 py-20 sm:py-28 lg:grid-cols-[1fr_1fr] short:py-14"
     >
       <div>
-        <Eyebrow accent="sky">Education</Eyebrow>
-        <SectionTitle id="education-title">A roboticist who fell for the web.</SectionTitle>
+        <Eyebrow accent="sky">{t.eyebrow}</Eyebrow>
+        <SectionTitle id="education-title">{t.title}</SectionTitle>
         <ol className="relative mt-10 space-y-6 border-l-2 border-dashed border-sky-deep/50 pl-7">
           {education.map((e) => (
-            <li key={e.degree} data-reveal className="relative">
+            <li key={e.id} data-reveal className="relative">
               <span
                 aria-hidden
                 className="absolute -left-[2.35rem] top-6 size-4 rounded-full border-4 border-cream bg-sky-deep"
@@ -32,7 +34,7 @@ export function Experience() {
       </div>
 
       <div className="lg:pt-24">
-        <h3 className="font-display text-2xl font-bold">Certifications</h3>
+        <h3 className="font-display text-2xl font-bold">{t.certifications}</h3>
         <ul className="mt-6 grid gap-3 sm:grid-cols-2">
           {certifications.map((c) => (
             <li

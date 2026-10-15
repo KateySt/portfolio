@@ -1,4 +1,4 @@
-import type { Accent } from "@/content/profile";
+import type { Accent } from "@/content/data";
 
 export const accentBg: Record<Accent, string> = {
   lavender: "bg-lavender",

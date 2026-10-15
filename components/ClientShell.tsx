@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import type { Dictionary } from "@/i18n/dictionary";
 import { initPrefs, usePrefs } from "@/lib/interaction";
 import { SceneLoader } from "./three/SceneLoader";
 import { CommandPalette } from "./CommandPalette";
@@ -34,7 +35,14 @@ function useAfterLoad(delay = 2500) {
   return ready;
 }
 
-export function ClientShell({ children }: { children: React.ReactNode }) {
+/** `t` carries only the strings the client layer renders (palette, robot) — not the whole dictionary. */
+export function ClientShell({
+  children,
+  t,
+}: {
+  children: React.ReactNode;
+  t: { palette: Dictionary["palette"]; robot: Dictionary["robot"] };
+}) {
   useEffect(() => initPrefs(), []);
   const live = usePrefs((p) => p.live);
   // web-vitals reads buffered entries, so late loading still reports LCP/CLS
@@ -47,8 +55,8 @@ export function ClientShell({ children }: { children: React.ReactNode }) {
       <SceneLoader />
       {live && <PointerFx />}
       {children}
-      {live && <RobotHitZone />}
-      <CommandPalette />
+      {live && <RobotHitZone t={t.robot} />}
+      <CommandPalette t={t.palette} />
       {analytics && (
         <>
           <Analytics />

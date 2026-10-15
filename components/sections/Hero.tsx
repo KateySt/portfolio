@@ -1,8 +1,13 @@
-import { profile } from "@/content/profile";
+import { getContent } from "@/content/content";
+import { fmt, rich } from "@/i18n/format";
 import { RobotAnchor } from "../RobotAnchor";
 import { ButtonLink } from "../ui";
 
-export function Hero() {
+const kbd = "rounded-md bg-white/80 px-1.5 py-0.5 shadow-soft";
+
+export async function Hero() {
+  const { dict, profile } = await getContent();
+  const t = dict.hero;
   return (
     <section
       id="top"
@@ -16,13 +21,13 @@ export function Hero() {
             <span className="absolute inline-flex size-full animate-ping rounded-full bg-mint-deep opacity-60" />
             <span className="relative inline-flex size-2.5 rounded-full bg-mint-deep" />
           </span>
-          Open to new projects · {profile.location}
+          {fmt(t.status, { location: profile.location })}
         </p>
         <h1
           id="hero-title"
           className="font-display text-hero font-extrabold tracking-tight text-balance short:text-[clamp(2.2rem,6vw,3.4rem)]"
         >
-          Hi, I&apos;m {profile.shortName}
+          {fmt(t.greeting, { name: profile.shortName })}
           <span className="block bg-gradient-to-r from-lavender-deep via-peach-deep to-mint-deep bg-clip-text text-transparent">
             {profile.role.toLowerCase()}
           </span>
@@ -31,20 +36,15 @@ export function Hero() {
           {profile.tagline}
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-3 short:mt-4">
-          <ButtonLink href="#projects">See my work →</ButtonLink>
+          <ButtonLink href="#projects">{t.seeWork}</ButtonLink>
           <ButtonLink href={profile.contact.cv} variant="soft" download>
-            Download CV
+            {t.downloadCv}
           </ButtonLink>
         </div>
         <p className="mt-6 hidden font-mono text-sm text-ink-soft mouse:block short:hidden">
-          psst — press{" "}
-          <kbd className="rounded-md bg-white/80 px-1.5 py-0.5 shadow-soft">⌘K</kbd> or{" "}
-          <kbd className="rounded-md bg-white/80 px-1.5 py-0.5 shadow-soft">Ctrl K</kbd> · try
-          poking the robot
+          {rich(t.hintKeyboard, { cmd: <kbd className={kbd}>⌘K</kbd>, ctrl: <kbd className={kbd}>Ctrl K</kbd> })}
         </p>
-        <p className="mt-5 font-mono text-sm text-ink-soft touch:block hidden short:hidden">
-          tap, squish or drag the robot ✦
-        </p>
+        <p className="mt-5 font-mono text-sm text-ink-soft touch:block hidden short:hidden">{t.hintTouch}</p>
       </div>
       <RobotAnchor
         pose="wave"

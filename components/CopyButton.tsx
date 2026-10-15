@@ -2,13 +2,16 @@
 
 import { useState } from "react";
 
+/** Labels come from the server's dictionary — keeps translations out of the client bundle. */
 export function CopyButton({
   value,
-  label = "Copy",
+  label,
+  copiedLabel,
   className = "",
 }: {
   value: string;
-  label?: string;
+  label: string;
+  copiedLabel: string;
   className?: string;
 }) {
   const [copied, setCopied] = useState(false);
@@ -27,7 +30,7 @@ export function CopyButton({
       className={`inline-flex min-h-11 items-center gap-1.5 rounded-full bg-ink px-4 text-sm font-semibold text-cream transition active:scale-95 ${className}`}
       aria-live="polite"
     >
-      {copied ? "Copied ✓" : label}
+      {copied ? copiedLabel : label}
     </button>
   );
 }

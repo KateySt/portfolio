@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { Dictionary } from "@/i18n/dictionary";
 import { haptic, input, prefs, pushImpulse, rememberTilt, usePrefs } from "@/lib/interaction";
 
 type IOSOrientation = { requestPermission?: () => Promise<"granted" | "denied"> };
@@ -15,7 +16,7 @@ type IOSOrientation = { requestPermission?: () => Promise<"granted" | "denied"> 
  *  drag             → taffy stretch, springs back on release
  *  hover (mouse)    → happy squish + wink
  */
-export function RobotHitZone() {
+export function RobotHitZone({ t }: { t: Dictionary["robot"] }) {
   const ref = useRef<HTMLDivElement>(null);
   const tilt = usePrefs((p) => p.tilt);
   const [askTilt, setAskTilt] = useState(false);
@@ -173,7 +174,7 @@ export function RobotHitZone() {
         ref={ref}
         role="button"
         tabIndex={-1}
-        aria-label="Poke the robot"
+        aria-label={t.poke}
         className="fixed left-0 top-0 z-30 cursor-grab touch-none select-none rounded-full active:cursor-grabbing"
         style={{ display: "none", WebkitTouchCallout: "none" }}
         onContextMenu={(e) => e.preventDefault()}
@@ -188,11 +189,11 @@ export function RobotHitZone() {
             onClick={requestTilt}
             className="min-h-11 rounded-full bg-lavender px-4 text-sm font-semibold text-ink"
           >
-            Wanna tilt me? ✦
+            {t.tiltAsk}
           </button>
           <button
             type="button"
-            aria-label="No thanks"
+            aria-label={t.tiltNo}
             onClick={() => {
               setAskTilt(false);
               rememberTilt("denied");

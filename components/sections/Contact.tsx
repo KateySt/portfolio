@@ -1,10 +1,13 @@
-import { profile } from "@/content/profile";
+import { person } from "@/content/data";
+import { getDictionary } from "@/i18n/dictionary";
 import { CopyButton } from "../CopyButton";
 import { RobotAnchor } from "../RobotAnchor";
 import { ButtonLink, Eyebrow } from "../ui";
 
-export function Contact() {
-  const { email, linkedin, github, cv } = profile.contact;
+export async function Contact() {
+  const dict = await getDictionary();
+  const t = dict.contact;
+  const { email, linkedin, github, cv } = person.contact;
   return (
     <section
       id="contact"
@@ -16,16 +19,19 @@ export function Contact() {
         <div aria-hidden className="absolute -left-20 -top-24 size-72 rounded-full bg-blush/60 blur-3xl" />
         <div aria-hidden className="absolute -bottom-24 right-0 size-72 rounded-full bg-lavender/50 blur-3xl" />
         <div className="relative min-w-0">
-          <Eyebrow accent="blush">Say hi</Eyebrow>
+          <Eyebrow accent="blush">{t.eyebrow}</Eyebrow>
           <h2 id="contact-title" className="font-display text-section font-bold tracking-tight text-balance">
-            Let&apos;s build something soft &amp; fast.
+            {t.title}
           </h2>
-          <p className="mt-5 max-w-xl text-lg text-ink-soft text-pretty">
-            Full-time role, contract or a tricky performance problem — my inbox is open.
-          </p>
+          <p className="mt-5 max-w-xl text-lg text-ink-soft text-pretty">{t.intro}</p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <ButtonLink href={`mailto:${email}`}>{email}</ButtonLink>
-            <CopyButton value={email} label="Copy email" className="min-h-12 bg-white/80 !text-ink shadow-soft" />
+            <CopyButton
+              value={email}
+              label={t.copyEmail}
+              copiedLabel={dict.common.copied}
+              className="min-h-12 bg-white/80 !text-ink shadow-soft"
+            />
           </div>
           <div className="mt-4 flex flex-wrap gap-3">
             <ButtonLink href={linkedin} variant="soft" external>
@@ -37,7 +43,7 @@ export function Contact() {
               </ButtonLink>
             )}
             <ButtonLink href={cv} variant="soft" download>
-              CV (PDF)
+              {t.cv}
             </ButtonLink>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { SITE_URL } from "@/content/profile";
+import { SITE_URL } from "@/content/data";
 
 const AI_BOTS = [
   "GPTBot",

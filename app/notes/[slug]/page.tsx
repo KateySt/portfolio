@@ -3,7 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getNote } from "@/lib/notes";
 import { notes as allNotes } from "@/content/notes";
-import { SITE_URL, profile } from "@/content/profile";
+import { SITE_URL, person } from "@/content/data";
+import { getDictionary } from "@/i18n/dictionary";
 import { Header } from "@/components/sections/Header";
 import { Footer } from "@/components/sections/Footer";
 import { RobotAnchor } from "@/components/RobotAnchor";
@@ -29,7 +30,7 @@ export async function generateMetadata({ params }: PageProps<"/notes/[slug]">): 
       title: note.title,
       description: note.description,
       publishedTime: note.date,
-      authors: [profile.name],
+      authors: [person.name],
       tags: note.tags,
     },
   };
@@ -40,6 +41,7 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
   const note = getNote(slug);
   if (!note) notFound();
   const { default: Body } = await import(`@/content/notes/${slug}.mdx`);
+  const t = (await getDictionary()).notes;
 
   return (
     <>
@@ -53,19 +55,19 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
           datePublished: note.date,
           keywords: note.tags.join(", "),
           url: `${SITE_URL}/notes/${slug}`,
-          author: { "@type": "Person", name: profile.name, url: SITE_URL },
+          author: { "@type": "Person", name: person.name, url: SITE_URL },
         }}
       />
       <main id="main" className="container-page pb-20 pt-32">
         <article className="mx-auto max-w-3xl">
           <Link href="/notes" className="inline-flex min-h-11 items-center font-medium text-ink-soft hover:text-ink">
-            ← All notes
+            {t.back}
           </Link>
           <div className="relative">
             <RobotAnchor pose="point" id="note" className="absolute -right-4 -top-10 hidden size-32 lg:block" />
             <p className="mt-6 font-mono text-sm text-ink-soft">
               {note.date}
-              {note.draft && <span className="ml-2 rounded-full bg-butter px-2 py-0.5 text-xs text-ink">draft</span>}
+              {note.draft && <span className="ml-2 rounded-full bg-butter px-2 py-0.5 text-xs text-ink">{t.draft}</span>}
             </p>
             <h1 className="mt-2 font-display text-section font-bold tracking-tight text-balance lg:pr-36">{note.title}</h1>
             <div className="mt-4 flex flex-wrap gap-1.5">
