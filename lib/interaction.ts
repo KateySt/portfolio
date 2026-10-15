@@ -59,6 +59,8 @@ type Prefs = {
   paletteUsed: boolean;
   /** 3D scene loaded and running */
   sceneReady: boolean;
+  /** first human interaction happened → interactive layer (3D, input, fx) boots */
+  live: boolean;
 };
 
 function createStore<T extends object>(initial: T) {
@@ -85,6 +87,7 @@ const serverPrefs: Prefs = {
   paletteOpen: false,
   paletteUsed: false,
   sceneReady: false,
+  live: false,
 };
 
 export const prefs = createStore<Prefs>(serverPrefs);

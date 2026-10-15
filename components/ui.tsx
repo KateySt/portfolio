@@ -18,15 +18,6 @@ export const accentSoft: Record<Accent, string> = {
   blush: "bg-blush/45",
 };
 
-export const accentText: Record<Accent, string> = {
-  lavender: "text-lavender-deep",
-  peach: "text-peach-deep",
-  mint: "text-mint-deep",
-  sky: "text-sky-deep",
-  butter: "text-butter-deep",
-  blush: "text-blush-deep",
-};
-
 export function Eyebrow({ children, accent = "lavender" }: { children: React.ReactNode; accent?: Accent }) {
   return (
     <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/70 px-3.5 py-1.5 font-mono text-xs font-medium uppercase tracking-[0.14em] text-ink-soft shadow-soft">

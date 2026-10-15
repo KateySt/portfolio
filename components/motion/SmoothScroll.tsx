@@ -70,6 +70,11 @@ export function SmoothScroll() {
       });
 
       if (motion) {
+        // this boots on the first interaction, so anything already on (or above)
+        // the screen stays visible instead of blinking out and back in
+        document.querySelectorAll<HTMLElement>("[data-reveal]").forEach((el) => {
+          if (el.getBoundingClientRect().top < window.innerHeight * 0.95) el.removeAttribute("data-reveal");
+        });
         root.classList.add("motion-ready");
         ScrollTrigger.batch("[data-reveal]", {
           start: "top 88%",

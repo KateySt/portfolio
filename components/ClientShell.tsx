@@ -2,45 +2,59 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import { initPrefs } from "@/lib/interaction";
-import { InputTracker } from "./motion/InputTracker";
-import { PointerFx } from "./motion/PointerFx";
+import { initPrefs, usePrefs } from "@/lib/interaction";
 import { SceneLoader } from "./three/SceneLoader";
-import { RobotHitZone } from "./three/RobotHitZone";
 import { CommandPalette } from "./CommandPalette";
 
-// gsap + ScrollTrigger + Lenis are the biggest client chunk — load after first paint, when idle
-const SmoothScroll = dynamic(() => import("./motion/SmoothScroll").then((m) => m.SmoothScroll), {
+// Nothing below is needed for the first paint, so none of it ships in the
+// startup bundle: the interactive layer (scroll fx, input tracking, cursor/tap
+// fx, robot hit zone) boots with the first interaction, analytics after load.
+const SmoothScroll = dynamic(() => import("./motion/SmoothScroll").then((m) => m.SmoothScroll), { ssr: false });
+const InputTracker = dynamic(() => import("./motion/InputTracker").then((m) => m.InputTracker), { ssr: false });
+const PointerFx = dynamic(() => import("./motion/PointerFx").then((m) => m.PointerFx), { ssr: false });
+const RobotHitZone = dynamic(() => import("./three/RobotHitZone").then((m) => m.RobotHitZone), { ssr: false });
+const Analytics = dynamic(() => import("@vercel/analytics/next").then((m) => m.Analytics), { ssr: false });
+const SpeedInsights = dynamic(() => import("@vercel/speed-insights/next").then((m) => m.SpeedInsights), {
   ssr: false,
 });
 
-function useIdle(timeout = 1200) {
-  const [idle, setIdle] = useState(false);
+/** Fires once the page has fully loaded and gone idle — for non-essential scripts. */
+function useAfterLoad(delay = 2500) {
+  const [ready, setReady] = useState(false);
   useEffect(() => {
-    const w = window as Window & { requestIdleCallback?: typeof requestIdleCallback };
-    if (w.requestIdleCallback) {
-      const id = w.requestIdleCallback(() => setIdle(true), { timeout });
-      return () => cancelIdleCallback(id);
-    }
-    const id = setTimeout(() => setIdle(true), 200);
-    return () => clearTimeout(id);
-  }, [timeout]);
-  return idle;
+    let t: ReturnType<typeof setTimeout>;
+    const go = () => (t = setTimeout(() => setReady(true), delay));
+    if (document.readyState === "complete") go();
+    else window.addEventListener("load", go, { once: true });
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener("load", go);
+    };
+  }, [delay]);
+  return ready;
 }
 
 export function ClientShell({ children }: { children: React.ReactNode }) {
   useEffect(() => initPrefs(), []);
-  const idle = useIdle();
+  const live = usePrefs((p) => p.live);
+  // web-vitals reads buffered entries, so late loading still reports LCP/CLS
+  const analytics = useAfterLoad();
 
   return (
     <>
-      {idle && <SmoothScroll />}
-      <InputTracker />
+      {live && <SmoothScroll />}
+      {live && <InputTracker />}
       <SceneLoader />
-      <PointerFx />
+      {live && <PointerFx />}
       {children}
-      <RobotHitZone />
+      {live && <RobotHitZone />}
       <CommandPalette />
+      {analytics && (
+        <>
+          <Analytics />
+          <SpeedInsights />
+        </>
+      )}
     </>
   );
 }

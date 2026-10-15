@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { pickAnchor, refreshAnchors } from "@/lib/anchors";
-import { input } from "@/lib/interaction";
+import { input, prefs } from "@/lib/interaction";
 
 const Scene = dynamic(() => import("./Scene"), { ssr: false });
 
@@ -71,7 +71,10 @@ export function SceneLoader() {
       started = true;
       events.forEach((e) => window.removeEventListener(e, start));
       // let the triggering interaction paint first
-      setTimeout(() => setMode(hasWebGL() ? "3d" : "fallback"), 30);
+      setTimeout(() => {
+        prefs.set({ live: true });
+        setMode(hasWebGL() ? "3d" : "fallback");
+      }, 30);
     };
     events.forEach((e) => window.addEventListener(e, start, { passive: true, once: true }));
     // already scrolled (back/forward, anchor link) → start right away

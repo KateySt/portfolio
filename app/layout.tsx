@@ -1,22 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, Inter, JetBrains_Mono } from "next/font/google";
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Bricolage_Grotesque, Inter } from "next/font/google";
 import { SITE_URL, profile } from "@/content/profile";
 import { ClientShell } from "@/components/ClientShell";
 import "./globals.css";
+import "./poster.css";
 
+// Two web fonts only; small mono labels use the system monospace stack.
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
   subsets: ["latin"],
   display: "swap",
 });
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"], display: "swap" });
-const jetbrains = JetBrains_Mono({
-  variable: "--font-jetbrains",
-  subsets: ["latin"],
-  display: "swap",
-});
 
 const title = `${profile.name} — ${profile.role}`;
 
@@ -67,7 +62,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${bricolage.variable} ${inter.variable} ${jetbrains.variable} antialiased`}
+      className={`${bricolage.variable} ${inter.variable} antialiased`}
     >
       <body className="min-h-dvh">
         <a
@@ -77,8 +72,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           Skip to content
         </a>
         <ClientShell>{children}</ClientShell>
-        <Analytics />
-        <SpeedInsights />
       </body>
     </html>
   );

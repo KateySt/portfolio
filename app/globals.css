@@ -25,7 +25,7 @@
 
   --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", Menlo, Consolas, monospace;
 
   --radius-blob: 2rem;
   --shadow-soft: 0 1px 2px rgb(43 36 64 / 0.04), 0 8px 24px -8px rgb(43 36 64 / 0.12);

@@ -1,6 +1,6 @@
 import { projects } from "@/content/profile";
 import { RobotAnchor } from "../RobotAnchor";
-import { Eyebrow, Pill, SectionTitle, accentBg, accentSoft, accentText } from "../ui";
+import { Eyebrow, Pill, SectionTitle, accentBg, accentSoft } from "../ui";
 
 export function Projects() {
   return (
@@ -80,7 +80,7 @@ export function Projects() {
                 <ul className="mt-5 flex flex-wrap gap-1.5" aria-label={`${p.name} tech stack`}>
                   {p.stack.map((s) => (
                     <li key={s}>
-                      <Pill className={`!text-xs ${accentText[p.accent]} !bg-white/80`}>{s}</Pill>
+                      <Pill accent={p.accent} className="!text-xs">{s}</Pill>
                     </li>
                   ))}
                 </ul>

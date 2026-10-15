@@ -29,16 +29,25 @@ export function RobotAnchor({
       className={`pointer-events-none relative ${className}`}
     >
       {poster && (
-        <Image
+        // Inline low-res copy (app/poster.css) paints with the first frame and is
+        // the LCP element; the sharp image has the same box, so it never becomes
+        // a larger LCP candidate when it lands on top.
+        <div
           data-robot-poster
-          src="/robot-fallback.png"
-          alt=""
-          width={640}
-          height={720}
-          priority
-          sizes="(max-width: 767px) 72vw, 34rem"
-          className="absolute inset-0 m-auto h-[92%] w-auto object-contain transition-opacity duration-500"
-        />
+          data-robot-poster-bg
+          className="absolute inset-0 m-auto aspect-[640/720] h-[92%] transition-opacity duration-500"
+        >
+          <Image
+            src="/robot-fallback.png"
+            alt=""
+            fill
+            loading="eager"
+            preload={false}
+            fetchPriority="low"
+            sizes="(max-width: 767px) 72vw, 34rem"
+            className="object-contain"
+          />
+        </div>
       )}
     </div>
   );
