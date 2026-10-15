@@ -77,15 +77,9 @@ export const educationData: { id: EducationId; year: string }[] = [
 
 // Certificate titles are proper names — kept as issued.
 export const certifications = [
-  { name: "Cybersecurity", year: "2026" },
+  { name: "AI Agentic Engineer", year: "2026" },
+  { name: "Architecture of high loads", year: "2026" },
   { name: "Python Pro", year: "2025" },
-  { name: "DevOps Crash Course", year: "2024" },
-  { name: "DevOps", year: "2023" },
-  { name: "Java Fundamental · Team project stage", year: "2023" },
-  { name: "React Native", year: "2023" },
-  { name: "Java Fundamental", year: "2022" },
-  { name: "React", year: "2022" },
-  { name: "Front End Pro", year: "2022" },
 ];
 
 export const MCP_PATH = "/api/mcp";
