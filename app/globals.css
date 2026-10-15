@@ -1,26 +1,166 @@
 @import "tailwindcss";
 
+/* Phones in landscape and other short viewports */
+@custom-variant short (@media (max-height: 500px));
+@custom-variant touch (@media (pointer: coarse));
+@custom-variant mouse (@media (hover: hover) and (pointer: fine));
+
+@theme {
+  --color-cream: #fff8f1;
+  --color-cream-deep: #fbefe3;
+  --color-ink: #2b2440;
+  --color-ink-soft: #5a5170;
+  --color-lavender: #c9b8f5;
+  --color-lavender-deep: #a48ae8;
+  --color-peach: #ffc8b0;
+  --color-peach-deep: #f5a283;
+  --color-mint: #b8e6d2;
+  --color-mint-deep: #7fcfae;
+  --color-sky: #bfddf7;
+  --color-sky-deep: #8cc0ee;
+  --color-butter: #fff1a8;
+  --color-butter-deep: #f2d860;
+  --color-blush: #ffc6d9;
+  --color-blush-deep: #f59bbb;
+
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+
+  --radius-blob: 2rem;
+  --shadow-soft: 0 1px 2px rgb(43 36 64 / 0.04), 0 8px 24px -8px rgb(43 36 64 / 0.12);
+  --shadow-lift: 0 2px 4px rgb(43 36 64 / 0.05), 0 18px 40px -12px rgb(43 36 64 / 0.22);
+
+  --text-hero: clamp(2.6rem, 1.6rem + 5vw, 6rem);
+  --text-hero--line-height: 0.95;
+  --text-section: clamp(2rem, 1.4rem + 2.6vw, 3.6rem);
+  --text-section--line-height: 1.02;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+  /* scroll-driven section tint, updated from JS (falls back to cream) */
+  --page-tint: var(--color-cream);
+  --safe-l: env(safe-area-inset-left, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--color-cream);
+  -webkit-text-size-adjust: 100%;
+  overflow-x: clip;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--page-tint);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  transition: background-color 0.8s ease;
+  overflow-x: clip;
+}
+
+/* soft paper grain for tactility */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.35;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .17 0 0 0 0 .14 0 0 0 0 .25 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+::selection {
+  background: var(--color-lavender);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-lavender-deep);
+  outline-offset: 3px;
+  border-radius: 0.5rem;
+}
+
+@utility container-page {
+  width: 100%;
+  max-width: 90rem;
+  margin-inline: auto;
+  padding-left: max(1.25rem, var(--safe-l));
+  padding-right: max(1.25rem, var(--safe-r));
+  @media (min-width: 640px) {
+    padding-left: max(2rem, var(--safe-l));
+    padding-right: max(2rem, var(--safe-r));
+  }
+  @media (min-width: 1280px) {
+    padding-left: max(3rem, var(--safe-l));
+    padding-right: max(3rem, var(--safe-r));
+  }
+}
+
+@utility card-soft {
+  border-radius: var(--radius-blob);
+  background: rgb(255 255 255 / 0.62);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid rgb(255 255 255 / 0.8);
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* static poster hides once the live robot (3D or fallback) is on screen */
+.robot-live [data-robot-poster] {
+  opacity: 0;
+}
+
+/* tap ripple ("drop-wave") */
+@keyframes ripple {
+  from {
+    transform: translate(-50%, -50%) scale(0.2);
+    opacity: 0.7;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* elements revealed on scroll start visible when JS/motion are off */
+[data-reveal] {
+  opacity: 1;
+}
+.motion-ready [data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

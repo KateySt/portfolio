@@ -1,0 +1,29 @@
+{/* DRAFT — fill in the TODOs with real details, then set draft: false in content/notes/index.ts */}
+
+Horilla is an open-source HRMS and ERP used by companies around the world. When I joined, some of its main pages took around **30 seconds** to load. After the work below they load in about **4 seconds** — an 85% improvement — and secondary views got roughly 50% faster.
+
+## The problem: one page, one giant query
+
+The slow pages rendered everything in a single Django view: every widget, every list and every filter option was computed before the first byte reached the browser. One slow piece made the whole page slow.
+
+{/* TODO: which page exactly? how many records / what data shape? what did the profiler show (Django Debug Toolbar, EXPLAIN ANALYZE)? */}
+
+## The fix: small fragments, loaded asynchronously
+
+1. **Render a light shell first.** The view returns the layout with placeholders instead of data.
+2. **Load each block with HTMX.** Every heavy block gets its own endpoint and an `hx-get` with `hx-trigger="load"` (or `revealed` for below-the-fold blocks), so they load in parallel and the user sees the page immediately.
+3. **Filter on the client.** Lists that were re-queried on every filter change now load once and are filtered in the browser with Alpine.js.
+
+```html
+<div hx-get="/dashboard/attendance-summary/" hx-trigger="load" hx-swap="outerHTML">
+  <div class="skeleton h-40"></div>
+</div>
+```
+
+{/* TODO: add a before/after waterfall screenshot and the exact numbers per page */}
+
+## What I'd tell my past self
+
+- Measure first — the slowest block is rarely the one you suspect.
+- Perceived speed matters as much as total time: a shell in 300 ms feels fast even if one widget takes longer.
+- Smaller endpoints are easier to cache, test and optimize individually.

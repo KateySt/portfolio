@@ -1,0 +1,31 @@
+{/* DRAFT — fill in the TODOs with real details, then set draft: false in content/notes/index.ts */}
+
+On a design-contest marketplace I worked on, the statically generated Next.js pages scored only **60–75** in Lighthouse. After the changes below they consistently hit **90+**.
+
+## Why static pages were still slow
+
+Static HTML arrives fast, but the browser still had to download, parse and hydrate a lot of React just to power a few small interactive bits — toggles, counters, a carousel. Most of those components used several hooks and re-rendered more than needed.
+
+{/* TODO: which metrics were worst (TBT? LCP?) and which components were heaviest in the bundle analyzer? */}
+
+## What changed
+
+- **Vanilla JS for tiny widgets.** Simple interactions moved out of React into a few lines of plain JavaScript attached to the static HTML — no hydration cost.
+- **Leaner static output.** Unused client components were removed from the static pages, so less JavaScript shipped.
+- **Images and splitting.** Responsive images, lazy loading below the fold and code splitting for the rest.
+
+```js
+// before: a client component with useState + useEffect just to toggle a panel
+// after:
+document.querySelectorAll("[data-toggle]").forEach((btn) =>
+  btn.addEventListener("click", () =>
+    document.getElementById(btn.dataset.toggle).classList.toggle("hidden"),
+  ),
+);
+```
+
+{/* TODO: add before/after Lighthouse screenshots */}
+
+## Takeaway
+
+React is great for app-like UI. For mostly-static pages, every hook you don't ship is free performance.
