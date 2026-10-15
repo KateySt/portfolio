@@ -48,6 +48,10 @@ export const metadata: Metadata = {
   },
   twitter: { card: "summary_large_image", title, description: profile.tagline },
   robots: { index: true, follow: true },
+  // iOS turns number runs like "2022" or "30s → 4s" into tap-to-call links otherwise
+  formatDetection: { telephone: false, address: false, email: false },
+  // "Add to Home Screen" on iOS: own title, status bar blends with the page
+  appleWebApp: { capable: true, title: "Kateryna", statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {

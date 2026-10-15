@@ -28,18 +28,24 @@ const shared = {
 };
 const SOFT_PARTS = new Set(["Body", "Head", "ArmL", "ArmR", "Tummy", "EarL", "EarR"]);
 
-function marshmallow(src: THREE.MeshStandardMaterial, soft: boolean, name: string) {
+function marshmallow(src: THREE.MeshStandardMaterial, soft: boolean, name: string, lite: boolean) {
   const ink = name.startsWith("Eye") && !name.startsWith("EyeShine");
-  const m = new THREE.MeshPhysicalMaterial({
+  const base = {
     color: src.color,
     roughness: ink || name === "Mouth" ? 0.35 : 0.78,
     metalness: 0,
-    sheen: ink ? 0 : 0.8,
-    sheenRoughness: 0.75,
-    sheenColor: new THREE.Color("#ffffff"),
     emissive: name.startsWith("EyeShine") ? new THREE.Color("#ffffff") : new THREE.Color("#000000"),
     emissiveIntensity: name.startsWith("EyeShine") ? 0.9 : 1,
-  });
+  };
+  // lite (weak devices): plain standard material — the rim light below keeps the soft look
+  const m = lite
+    ? new THREE.MeshStandardMaterial(base)
+    : new THREE.MeshPhysicalMaterial({
+        ...base,
+        sheen: ink ? 0 : 0.8,
+        sheenRoughness: 0.75,
+        sheenColor: new THREE.Color("#ffffff"),
+      });
   const rimColor = new THREE.Color("#fff1f7");
   m.onBeforeCompile = (shader) => {
     shader.uniforms.uTime = shared.uTime;
@@ -75,7 +81,7 @@ float rim = pow(1.0 - clamp(dot(normal, vdir), 0.0, 1.0), 2.4);
 totalEmissiveRadiance += uRimColor * rim * uRim;`,
       );
   };
-  m.customProgramCacheKey = () => `marsh-${soft}-${ink}`;
+  m.customProgramCacheKey = () => `marsh-${soft}-${ink}-${lite}`;
   return m;
 }
 
@@ -107,7 +113,7 @@ function poseTargets(pose: RobotPose | "fly", t: number, side: number) {
   }
 }
 
-export function Robot() {
+export function Robot({ lite = false }: { lite?: boolean }) {
   const { scene } = useGLTF("/robot.glb");
   const { size, invalidate } = useThree();
 
@@ -120,11 +126,12 @@ export function Robot() {
           mesh.material as THREE.MeshStandardMaterial,
           SOFT_PARTS.has(mesh.name),
           mesh.name,
+          lite,
         );
       }
     });
     return root;
-  }, [scene]);
+  }, [scene, lite]);
 
   const parts = useMemo(() => {
     const get = (n: string) => model.getObjectByName(n)!;
@@ -282,6 +289,10 @@ export function Robot() {
     const accelX = (vx - S.prevVx) / Math.max(dt, 1e-3);
     S.prevVx = vx;
     const flying = motion && speed > 380 && !input.drag.active;
+    // keep full frame rate while the robot itself is still moving or wobbling
+    if (motion && (speed > 25 || S.airborne || Math.abs(S.j.v) > 0.4 || Math.abs(S.sc.v) > 0.02)) {
+      input.lastActivity = now;
+    }
 
     // hop physics (units: robot heights)
     if (S.airborne) {

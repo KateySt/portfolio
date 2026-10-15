@@ -23,13 +23,13 @@ export function InputTracker() {
     const onMove = (e: PointerEvent) => {
       input.pointerType = e.pointerType as typeof input.pointerType;
       if (e.pointerType === "touch") return; // touch handled by down/swipe
-      input.lastPointerAt = performance.now();
+      input.lastPointerAt = input.lastActivity = performance.now();
       Object.assign(input.look, toNdc(e.clientX, e.clientY));
     };
 
     const onDown = (e: PointerEvent) => {
       input.pointerType = e.pointerType as typeof input.pointerType;
-      input.lastPointerAt = performance.now();
+      input.lastPointerAt = input.lastActivity = performance.now();
       if (e.pointerType === "touch") {
         // robot glances at the tap point for a moment
         Object.assign(input.look, toNdc(e.clientX, e.clientY));
@@ -49,6 +49,7 @@ export function InputTracker() {
       const x = e.touches[0].clientX;
       const v = ((x - lastX) / Math.max(8, now - lastT)) * 16;
       input.swipeVelocityX = input.swipeVelocityX * 0.5 + v * 0.5;
+      input.lastActivity = now;
       lastX = x;
       lastT = now;
     };

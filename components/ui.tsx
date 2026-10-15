@@ -72,7 +72,8 @@ export function ButtonLink({
   external?: boolean;
 }) {
   const base =
-    "inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 text-base font-semibold transition-[transform,background-color,box-shadow] duration-300 ease-out active:scale-[0.96]";
+    // max-w-full + overflow-wrap: long labels (the email) wrap on very narrow screens instead of widening the layout
+    "inline-flex min-h-12 max-w-full items-center justify-center gap-2 rounded-full px-6 py-2 text-center text-base font-semibold [overflow-wrap:anywhere] transition-[transform,background-color,box-shadow] duration-300 ease-out active:scale-[0.96]";
   const styles =
     variant === "solid"
       ? "bg-ink text-cream shadow-lift hover:bg-[#3a3155]"

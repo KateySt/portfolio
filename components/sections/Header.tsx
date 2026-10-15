@@ -18,7 +18,7 @@ export function Header() {
       >
         <Link
           href="/"
-          className="flex min-h-11 items-center gap-2 rounded-full bg-white/75 px-4 font-display text-lg font-bold shadow-soft backdrop-blur"
+          className="flex min-h-11 items-center gap-2 rounded-full bg-white/90 px-4 font-display text-lg font-bold shadow-soft mouse:bg-white/75 mouse:backdrop-blur"
         >
           <span aria-hidden className="inline-block size-3 rounded-full bg-lavender-deep" />
           kateryna<span className="text-lavender-deep">.</span>

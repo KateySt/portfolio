@@ -82,6 +82,7 @@ export function RobotHitZone() {
       if (input.drag.active) {
         // rubber-band: the further you pull, the harder it resists
         const k = (v: number) => Math.sign(v) * Math.pow(Math.abs(v), 0.82);
+        input.lastActivity = performance.now();
         input.drag.dx = k(dx);
         input.drag.dy = k(dy);
       }

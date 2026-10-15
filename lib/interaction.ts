@@ -27,9 +27,22 @@ export const input = {
   impulses: [] as Impulse[],
   /** Robot's projected screen position, written by the scene for the DOM hit zone. */
   robotScreen: { x: -9999, y: -9999, r: 0, visible: false },
+  /** Last time anything moved (input, scroll, robot) — idle scenes drop to 30fps. */
+  lastActivity: 0,
 };
 
+export function markActive() {
+  input.lastActivity = performance.now();
+}
+
+/** Weak device or data saver → lighter 3D. Evaluated once on the client. */
+export function isLowPowerDevice(): boolean {
+  const n = navigator as Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } };
+  return (n.hardwareConcurrency ?? 8) <= 4 || (n.deviceMemory ?? 8) <= 4 || !!n.connection?.saveData;
+}
+
 export function pushImpulse(kind: ImpulseKind, strength = 1, dirX?: number) {
+  markActive();
   input.impulses.push({ kind, at: performance.now(), strength, dirX });
   if (input.impulses.length > 8) input.impulses.shift();
 }

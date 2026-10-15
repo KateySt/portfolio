@@ -47,6 +47,7 @@ export function SmoothScroll() {
       const dt = Math.max(8, now - lastT);
       const v = ((window.scrollY - lastY) / dt) * 16; // px per ~frame
       input.scrollVelocity = input.scrollVelocity * 0.6 + v * 0.4;
+      input.lastActivity = now;
       lastY = window.scrollY;
       lastT = now;
     };

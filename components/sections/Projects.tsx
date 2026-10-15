@@ -43,7 +43,7 @@ export function Projects() {
                 </h3>
 
                 <div className={`mt-6 rounded-3xl p-5 ${accentSoft[p.accent]}`}>
-                  <p className="font-display text-4xl font-extrabold tracking-tight sm:text-5xl">
+                  <p className="whitespace-nowrap font-display text-[clamp(1.75rem,9vw,2.25rem)] font-extrabold tracking-tight sm:text-5xl">
                     {p.metric.value}
                   </p>
                   <p className="mt-1 text-sm font-medium text-ink-soft">{p.metric.label}</p>
