@@ -35,7 +35,8 @@ export async function Skills() {
                 <span className={`size-3 rounded-[0.4rem] ${accentBg[g.accent]}`} aria-hidden />
                 {g.title}
               </h3>
-              <ul className="mt-5 flex flex-wrap gap-2">
+              {/* tech names: keep them as-is when the browser translates the page */}
+              <ul translate="no" className="mt-5 flex flex-wrap gap-2">
                 {g.items.map((s, i) => (
                   <li
                     key={s}

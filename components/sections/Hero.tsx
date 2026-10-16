@@ -42,7 +42,7 @@ export async function Hero() {
           </ButtonLink>
         </div>
         <p className="mt-6 hidden font-mono text-sm text-ink-soft mouse:block short:hidden">
-          {rich(t.hintKeyboard, { cmd: <kbd className={kbd}>⌘K</kbd>, ctrl: <kbd className={kbd}>Ctrl K</kbd> })}
+          {rich(t.hintKeyboard, { cmd: <kbd translate="no" className={kbd}>⌘K</kbd>, ctrl: <kbd translate="no" className={kbd}>Ctrl K</kbd> })}
         </p>
         <p className="mt-5 font-mono text-sm text-ink-soft touch:block hidden short:hidden">{t.hintTouch}</p>
       </div>

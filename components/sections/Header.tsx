@@ -20,12 +20,13 @@ export async function Header() {
       >
         <Link
           href="/"
-          className="flex min-h-11 items-center gap-2 rounded-full bg-surface/90 px-4 font-display text-lg font-bold shadow-soft mouse:bg-surface/75 mouse:backdrop-blur"
+          translate="no"
+          className="flex min-h-11 shrink-0 items-center gap-2 rounded-full bg-surface/90 px-4 font-display text-lg font-bold shadow-soft mouse:bg-surface/75 mouse:backdrop-blur"
         >
           <span aria-hidden className="inline-block size-3 rounded-full bg-lavender-deep" />
           kateryna<span className="text-lavender-deep">.</span>
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 items-center gap-2">
           <ul className="hidden items-center gap-1 rounded-full bg-surface/75 p-1 shadow-soft backdrop-blur lg:flex">
             {links.map((l) => (
               <li key={l.href}>

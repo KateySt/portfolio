@@ -37,7 +37,7 @@ export async function Agents() {
           <div data-reveal className="card-soft p-5">
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-ink-soft">{t.endpoint}</p>
             <div className="mt-2 flex flex-wrap items-center gap-3">
-              <code className="min-w-0 break-all font-mono text-base font-semibold">{url}</code>
+              <code translate="no" className="min-w-0 break-all font-mono text-base font-semibold">{url}</code>
               <CopyButton value={url} {...copy} />
             </div>
           </div>
@@ -45,7 +45,7 @@ export async function Agents() {
           <div data-reveal className="card-soft p-5">
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-ink-soft">{t.claudeCode}</p>
             <div className="mt-2 flex flex-wrap items-center gap-3">
-              <code className="min-w-0 flex-1 break-all rounded-xl bg-ink/5 px-3 py-2 font-mono text-sm">
+              <code translate="no" className="min-w-0 flex-1 break-all rounded-xl bg-ink/5 px-3 py-2 font-mono text-sm">
                 {claudeCmd}
               </code>
               <CopyButton value={claudeCmd} {...copy} />
@@ -57,7 +57,7 @@ export async function Agents() {
               {t.otherClients}
               <span aria-hidden className="text-lg transition group-open:rotate-45">+</span>
             </summary>
-            <pre className="mt-3 overflow-x-auto rounded-xl bg-ink/5 p-4 font-mono text-sm">{cursorJson}</pre>
+            <pre translate="no" className="mt-3 overflow-x-auto rounded-xl bg-ink/5 p-4 font-mono text-sm">{cursorJson}</pre>
             <CopyButton value={cursorJson} {...copy} className="mt-3" />
           </details>
         </div>

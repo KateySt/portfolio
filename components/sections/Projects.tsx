@@ -46,7 +46,7 @@ export async function Projects() {
                 </h3>
 
                 <div className={`mt-6 rounded-3xl p-5 ${accentSoft[p.accent]}`}>
-                  <p className="whitespace-nowrap font-display text-[clamp(1.75rem,9vw,2.25rem)] font-extrabold tracking-tight sm:text-5xl">
+                  <p className="text-balance font-display text-[clamp(1.75rem,9vw,2.25rem)] font-extrabold tracking-tight sm:text-5xl">
                     {p.metric.value}
                   </p>
                   <p className="mt-1 text-sm font-medium text-ink-soft">{p.metric.label}</p>
@@ -80,7 +80,7 @@ export async function Projects() {
                   </div>
                 </dl>
 
-                <ul className="mt-5 flex flex-wrap gap-1.5" aria-label={fmt(t.stackLabel, { name: p.name })}>
+                <ul translate="no" className="mt-5 flex flex-wrap gap-1.5" aria-label={fmt(t.stackLabel, { name: p.name })}>
                   {p.stack.map((s) => (
                     <li key={s}>
                       <Pill accent={p.accent} className="!text-xs">{s}</Pill>

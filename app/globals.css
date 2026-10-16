@@ -184,6 +184,12 @@ body::before {
 /* in the base layer so utilities (e.g. focus-visible:outline-none) can override it —
    unlayered CSS always beats Tailwind's layered utilities */
 @layer base {
+  /* Browser translation (Google/Edge/Safari) makes words longer — German or Ukrainian
+     compounds didn't fit and pushed text past the gutters. "anywhere" lets a too-long
+     word break, and also lets flex/grid items shrink below their longest word. */
+  body {
+    overflow-wrap: anywhere;
+  }
   :focus-visible {
     outline: 3px solid var(--color-lavender-deep);
     outline-offset: 3px;
