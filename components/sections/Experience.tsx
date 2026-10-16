@@ -43,7 +43,7 @@ export async function Experience() {
               className="card-soft flex min-h-16 items-center justify-between gap-3 !rounded-2xl px-5 py-3"
             >
               <span className="font-medium">{c.name}</span>
-              <span className="rounded-full bg-sky/60 px-2.5 py-0.5 font-mono text-xs">{c.year}</span>
+              <span className="rounded-full bg-sky/60 px-2.5 dark:bg-sky dark:text-on-pastel py-0.5 font-mono text-xs">{c.year}</span>
             </li>
           ))}
         </ul>

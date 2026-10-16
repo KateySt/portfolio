@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import { input, haptic, prefs } from "@/lib/interaction";
+import { night } from "@/lib/theme";
 import { pickAnchor, type AnchorTarget } from "@/lib/anchors";
 import type { RobotPose } from "../RobotAnchor";
 
@@ -25,8 +26,12 @@ const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
 const shared = {
   uTime: { value: 0 },
   uWobble: { value: 0 },
+  uNight: { value: 0 }, // mirrors night.value: 0 day … 1 night
 };
 const SOFT_PARTS = new Set(["Body", "Head", "ArmL", "ArmR", "Tummy", "EarL", "EarR"]);
+// at night the face turns into a softly lit screen; the antenna ball and cheeks glow a little too
+const NIGHT_GLOW: Record<string, number> = { Face: 0.5, AntennaBall: 0.7, CheekL: 0.3, CheekR: 0.3, Tummy: 0.1 };
+const NIGHT_RIM = new THREE.Color("#d9c8ff");
 
 function marshmallow(src: THREE.MeshStandardMaterial, soft: boolean, name: string, lite: boolean) {
   const ink = name.startsWith("Eye") && !name.startsWith("EyeShine");
@@ -47,11 +52,24 @@ function marshmallow(src: THREE.MeshStandardMaterial, soft: boolean, name: strin
         sheenColor: new THREE.Color("#ffffff"),
       });
   const rimColor = new THREE.Color("#fff1f7");
+  const glow = NIGHT_GLOW[name] ?? 0;
+  // night: same hues, more saturated, so the robot pops on the dark page like the UI pastels
+  const nightColor = src.color.clone();
+  if (!ink && name !== "Face") {
+    const hsl = { h: 0, s: 0, l: 0 };
+    nightColor.getHSL(hsl);
+    nightColor.setHSL(hsl.h, Math.min(1, hsl.s * 1.7 + 0.15), hsl.l * 0.9);
+  }
   m.onBeforeCompile = (shader) => {
     shader.uniforms.uTime = shared.uTime;
     shader.uniforms.uWobble = shared.uWobble;
+    shader.uniforms.uNight = shared.uNight;
     shader.uniforms.uRim = { value: ink ? 0 : 0.55 };
     shader.uniforms.uRimColor = { value: rimColor };
+    shader.uniforms.uNightRim = { value: NIGHT_RIM };
+    shader.uniforms.uGlow = { value: glow };
+    shader.uniforms.uGlowColor = { value: src.color.clone() };
+    shader.uniforms.uNightColor = { value: nightColor };
     shader.vertexShader = shader.vertexShader
       .replace(
         "#include <common>",
@@ -71,18 +89,43 @@ transformed += objectNormal * w * uWobble;`
       .replace(
         "#include <common>",
         `#include <common>
-uniform float uRim; uniform vec3 uRimColor;`,
+uniform float uRim; uniform vec3 uRimColor; uniform vec3 uNightRim;
+uniform float uTime; uniform float uNight; uniform float uGlow; uniform vec3 uGlowColor; uniform vec3 uNightColor;`,
+      )
+      .replace(
+        "#include <color_fragment>",
+        `#include <color_fragment>
+diffuseColor.rgb = mix(diffuseColor.rgb, uNightColor, uNight);`,
       )
       .replace(
         "#include <emissivemap_fragment>",
         `#include <emissivemap_fragment>
 vec3 vdir = isOrthographic ? vec3(0.0, 0.0, 1.0) : normalize(vViewPosition);
 float rim = pow(1.0 - clamp(dot(normal, vdir), 0.0, 1.0), 2.4);
-totalEmissiveRadiance += uRimColor * rim * uRim;`,
+// night: lavender rim so the silhouette reads on the dark page
+totalEmissiveRadiance += mix(uRimColor, uNightRim, uNight) * rim * uRim;
+// night: the screen "breathes" slowly
+float breathe = 0.86 + 0.14 * sin(uTime * 1.7);
+totalEmissiveRadiance += uGlowColor * uGlow * uNight * breathe;`,
       );
   };
   m.customProgramCacheKey = () => `marsh-${soft}-${ink}-${lite}`;
   return m;
+}
+
+/** Soft round blob (rgb "r,g,b") fading to transparent — shadows and night glows. */
+function radialTexture(rgb: string, alpha: number) {
+  const c = document.createElement("canvas");
+  c.width = c.height = 64;
+  const g = c.getContext("2d")!;
+  const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  grad.addColorStop(0, `rgba(${rgb},${alpha})`);
+  grad.addColorStop(1, `rgba(${rgb},0)`);
+  g.fillStyle = grad;
+  g.fillRect(0, 0, 64, 64);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace; // keep the pastel hue instead of washing it to grey
+  return tex;
 }
 
 /* ---------- poses ---------- */
@@ -133,6 +176,15 @@ export function Robot({ lite = false }: { lite?: boolean }) {
     return root;
   }, [scene, lite]);
 
+  const sheened = useMemo(() => {
+    const list: THREE.MeshPhysicalMaterial[] = [];
+    model.traverse((o) => {
+      const m = (o as THREE.Mesh).material as THREE.MeshPhysicalMaterial | undefined;
+      if (m?.isMeshPhysicalMaterial && m.sheen > 0) list.push(m);
+    });
+    return list;
+  }, [model]);
+
   const parts = useMemo(() => {
     const get = (n: string) => model.getObjectByName(n)!;
     const p = {
@@ -162,6 +214,25 @@ export function Robot({ lite = false }: { lite?: boolean }) {
   const root = useRef<THREE.Group>(null!);
   const squash = useRef<THREE.Group>(null!);
   const shadow = useRef<THREE.Mesh>(null!);
+  const floorGlow = useRef<THREE.Mesh>(null!);
+
+  // the face "screen" lights the arms and tummy at night. Always mounted (intensity 0 by day):
+  // adding a light later would recompile every material mid-transition.
+  const faceLight = useMemo(() => {
+    const l = new THREE.PointLight("#fff0e4", 0, 0, 0);
+    l.position.set(0, 0.42, 0.95); // head-local, just in front of the screen
+    return l;
+  }, []);
+  useEffect(() => {
+    parts.head.add(faceLight);
+    return () => void parts.head.remove(faceLight);
+  }, [parts, faceLight]);
+
+  // theme switches need a frame even when the loop is idle / motion is off
+  useEffect(() => {
+    const off = prefs.subscribe(() => invalidate());
+    return () => void off();
+  }, [invalidate]);
 
   // all physics state in one ref
   const st = useRef({
@@ -192,17 +263,34 @@ export function Robot({ lite = false }: { lite?: boolean }) {
     };
   }, [invalidate]);
 
-  const shadowTex = useMemo(() => {
-    const c = document.createElement("canvas");
-    c.width = c.height = 64;
-    const g = c.getContext("2d")!;
-    const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
-    grad.addColorStop(0, "rgba(43,36,64,0.32)");
-    grad.addColorStop(1, "rgba(43,36,64,0)");
-    g.fillStyle = grad;
-    g.fillRect(0, 0, 64, 64);
-    return new THREE.CanvasTexture(c);
+  const shadowTex = useMemo(() => radialTexture("43,36,64", 0.32), []);
+
+  // night: soft lavender light spill on the "floor" instead of a dark shadow
+  const glowTex = useMemo(() => radialTexture("201,184,245", 0.55), []);
+
+  // night halos: one behind the head (the screen's light around the silhouette), one around the antenna ball
+  const halos = useMemo(() => {
+    const make = (rgb: string, w: number, h: number) =>
+      new THREE.Mesh(
+        new THREE.PlaneGeometry(w, h),
+        new THREE.MeshBasicMaterial({ map: radialTexture(rgb, 1), transparent: true, depthWrite: false, opacity: 0 }),
+      );
+    const head = make("214,196,255", 2.1, 1.75);
+    head.position.set(0, 0.46, -0.35); // behind the head: the head itself hides the middle
+    const ball = make("184,230,210", 0.75, 0.75);
+    ball.position.set(0, 0, -0.05);
+    return { head, ball };
   }, []);
+  useEffect(() => {
+    parts.head.add(halos.head);
+    // the ball is scaled in the GLB — undo it so the halo size is in model units
+    halos.ball.scale.setScalar(1 / Math.max(parts.base.ball.x, 1e-3));
+    parts.ball.add(halos.ball);
+    return () => {
+      parts.head.remove(halos.head);
+      parts.ball.remove(halos.ball);
+    };
+  }, [parts, halos]);
 
   useFrame((state, rawDt) => {
     const S = st.current;
@@ -212,6 +300,23 @@ export function Robot({ lite = false }: { lite?: boolean }) {
     const dt = Math.min(rawDt, 1 / 30);
     const W = size.width;
     const H = size.height;
+
+    // --- day ↔ night: ease ~1s towards the theme (snap with reduced motion) ---
+    const nightT = prefs.get().theme === "dark" ? 1 : 0;
+    const dn = nightT - night.value;
+    if (!motion || Math.abs(dn) < 0.002) night.value = nightT;
+    else {
+      night.value += dn * (1 - Math.exp(-rawDt * 4));
+      input.lastActivity = now; // full frame rate during the fade
+    }
+    shared.uNight.value = night.value;
+    // white sheen washes the candy colors out on a dark page: soften it at night
+    for (const m of sheened) m.sheen = 0.8 - 0.55 * night.value;
+    faceLight.intensity = night.value * 1.1;
+    const breathe = 0.86 + 0.14 * Math.sin(t * 1.7); // same rhythm as the screen shader
+    halos.head.visible = halos.ball.visible = night.value > 0.01;
+    (halos.head.material as THREE.MeshBasicMaterial).opacity = night.value * 0.28 * breathe;
+    (halos.ball.material as THREE.MeshBasicMaterial).opacity = night.value * 0.6 * breathe;
 
     // --- target anchor (cheap: ~10 rect reads, throttled) ---
     if (now > S.pickAt || !S.target) {
@@ -404,7 +509,11 @@ export function Robot({ lite = false }: { lite?: boolean }) {
     const sh = shadow.current;
     const shrink = 1 / (1 + S.hop * 2.2);
     sh.scale.set(1.5 * shrink * (1 - S.j.x * 0.6), 0.32 * shrink, 1);
-    (sh.material as THREE.MeshBasicMaterial).opacity = 0.9 * shrink;
+    (sh.material as THREE.MeshBasicMaterial).opacity = 0.9 * shrink * (1 - night.value * 0.6);
+    const fg = floorGlow.current;
+    fg.visible = night.value > 0.01;
+    fg.scale.set(2.2 * shrink * (1 - S.j.x * 0.6), 0.5 * shrink, 1);
+    (fg.material as THREE.MeshBasicMaterial).opacity = night.value * (0.75 + 0.25 * shrink);
 
     // --- publish projected position for the DOM hit zone ---
     const centerY = H / 2 - (g.position.y);
@@ -420,6 +529,10 @@ export function Robot({ lite = false }: { lite?: boolean }) {
       <mesh ref={shadow} position={[0, -ROBOT_H / 2 - 0.02, -1]} renderOrder={-1}>
         <planeGeometry args={[1, 1]} />
         <meshBasicMaterial map={shadowTex} transparent depthWrite={false} />
+      </mesh>
+      <mesh ref={floorGlow} position={[0, -ROBOT_H / 2 - 0.02, -1.1]} renderOrder={-2} visible={false}>
+        <planeGeometry args={[1, 1]} />
+        <meshBasicMaterial map={glowTex} transparent depthWrite={false} />
       </mesh>
       {/* squash pivots at the feet */}
       <group ref={squash} position={[0, -ROBOT_H / 2, 0]}>

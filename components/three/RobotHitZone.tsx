@@ -182,12 +182,12 @@ export function RobotHitZone({ t }: { t: Dictionary["robot"] }) {
       {askTilt && tilt === "unknown" && (
         <div
           ref={bubble}
-          className="fixed left-0 top-0 z-40 flex items-center gap-2 rounded-full bg-white px-2 py-1.5 shadow-lift"
+          className="fixed left-0 top-0 z-40 flex items-center gap-2 rounded-full bg-surface px-2 py-1.5 shadow-lift"
         >
           <button
             type="button"
             onClick={requestTilt}
-            className="min-h-11 rounded-full bg-lavender px-4 text-sm font-semibold text-ink"
+            className="min-h-11 rounded-full bg-lavender px-4 text-sm font-semibold text-on-pastel"
           >
             {t.tiltAsk}
           </button>

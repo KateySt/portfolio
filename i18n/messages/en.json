@@ -46,7 +46,8 @@
     "forAi": "For AI",
     "contact": "Contact",
     "openMenu": "Open command menu",
-    "menu": "Menu"
+    "menu": "Menu",
+    "toggleTheme": "Toggle dark mode"
   },
   "hero": {
     "status": "Open to new projects · {location}",
@@ -227,6 +228,8 @@
     "openLlms": "Open llms.txt",
     "jump": "Make the robot jump",
     "motionOff": "Turn animations off",
-    "motionOn": "Turn animations on"
+    "motionOn": "Turn animations on",
+    "themeDark": "Switch to dark theme",
+    "themeLight": "Switch to light theme"
   }
 }

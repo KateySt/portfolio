@@ -1,7 +1,7 @@
 import { getContent } from "@/content/content";
 import { fmt } from "@/i18n/format";
 import { RobotAnchor } from "../RobotAnchor";
-import { Eyebrow, Pill, SectionTitle, accentBg, accentSoft } from "../ui";
+import { Eyebrow, Pill, SectionTitle, accentBg, accentGlow, accentSoft } from "../ui";
 
 export async function Projects() {
   const { dict, projects } = await getContent();
@@ -35,7 +35,7 @@ export async function Projects() {
             >
               <div
                 aria-hidden
-                className={`absolute -right-16 -top-16 size-48 rounded-full blur-2xl ${accentSoft[p.accent]}`}
+                className={`absolute -right-16 -top-16 size-48 rounded-full blur-2xl ${accentGlow[p.accent]}`}
               />
               <div className="relative">
                 <p className="font-mono text-xs uppercase tracking-[0.14em] text-ink-soft">

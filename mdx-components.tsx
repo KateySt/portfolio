@@ -11,7 +11,7 @@ const components: MDXComponents = {
   code: (props) => <code className="rounded-md bg-lavender/30 px-1.5 py-0.5 font-mono text-[0.9em] text-ink" {...props} />,
   pre: (props) => (
     <pre
-      className="mt-6 overflow-x-auto rounded-3xl bg-ink p-5 font-mono text-sm leading-relaxed text-cream [&_code]:bg-transparent [&_code]:p-0 [&_code]:text-cream"
+      className="mt-6 overflow-x-auto rounded-3xl bg-code p-5 font-mono text-sm leading-relaxed text-code-fg [&_code]:bg-transparent [&_code]:p-0 [&_code]:text-code-fg"
       {...props}
     />
   ),

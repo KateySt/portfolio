@@ -1,9 +1,9 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import type { Dictionary } from "@/i18n/dictionary";
-import { initPrefs, usePrefs } from "@/lib/interaction";
+import { initPrefs, initTheme, usePrefs } from "@/lib/interaction";
 import { SceneLoader } from "./three/SceneLoader";
 import { CommandPalette } from "./CommandPalette";
 
@@ -44,6 +44,8 @@ export function ClientShell({
   t: { palette: Dictionary["palette"]; robot: Dictionary["robot"] };
 }) {
   useEffect(() => initPrefs(), []);
+  // before paint: keeps the theme the <head> script chose (React's dev remount clears it)
+  useLayoutEffect(() => initTheme(), []);
   const live = usePrefs((p) => p.live);
   // web-vitals reads buffered entries, so late loading still reports LCP/CLS
   const analytics = useAfterLoad();

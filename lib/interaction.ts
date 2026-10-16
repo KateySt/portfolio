@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { applyTheme, persistTheme, resolveTheme, storedTheme, type Theme } from "./theme";
 
 /**
  * Per-frame interaction state. Mutated by DOM listeners, read inside useFrame.
@@ -74,6 +75,8 @@ type Prefs = {
   sceneReady: boolean;
   /** first human interaction happened → interactive layer (3D, input, fx) boots */
   live: boolean;
+  /** active color theme (see lib/theme.ts) */
+  theme: Theme;
 };
 
 function createStore<T extends object>(initial: T) {
@@ -101,6 +104,7 @@ const serverPrefs: Prefs = {
   paletteUsed: false,
   sceneReady: false,
   live: false,
+  theme: "light",
 };
 
 export const prefs = createStore<Prefs>(serverPrefs);
@@ -135,6 +139,29 @@ export function setMotionOverride(on: boolean | null) {
   writeStored(MOTION_KEY, on === null ? "" : on ? "on" : "off");
   prefs.set({ motionOverride: on });
   recomputeMotion();
+}
+
+/** Toggle / ⌘K: an explicit choice is remembered and stops following the OS. */
+export function setTheme(theme: Theme) {
+  persistTheme(theme);
+  applyTheme(theme);
+  prefs.set({ theme });
+}
+
+/** Sync the store with what the <head> script applied, and follow OS changes until the user picks. */
+export function initTheme() {
+  const theme = resolveTheme();
+  applyTheme(theme); // also re-applies after React's dev remount clears the attribute
+  prefs.set({ theme });
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  const onOs = () => {
+    if (storedTheme()) return;
+    const next: Theme = mq.matches ? "dark" : "light";
+    applyTheme(next);
+    prefs.set({ theme: next });
+  };
+  mq.addEventListener("change", onOs);
+  return () => mq.removeEventListener("change", onOs);
 }
 
 let reducedQuery: MediaQueryList | null = null;

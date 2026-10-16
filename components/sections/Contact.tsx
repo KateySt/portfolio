@@ -30,7 +30,7 @@ export async function Contact() {
               value={email}
               label={t.copyEmail}
               copiedLabel={dict.common.copied}
-              className="min-h-12 bg-white/80 !text-ink shadow-soft"
+              className="min-h-12 bg-surface/80 !text-ink shadow-soft"
             />
           </div>
           <div className="mt-4 flex flex-wrap gap-3">

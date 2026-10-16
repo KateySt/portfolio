@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { Command } from "cmdk";
 import { mcpUrl, person } from "@/content/data";
 import type { Dictionary } from "@/i18n/dictionary";
-import { haptic, prefs, pushImpulse, setMotionOverride, usePrefs } from "@/lib/interaction";
+import { haptic, prefs, pushImpulse, setMotionOverride, setTheme, usePrefs } from "@/lib/interaction";
 
 const sectionIds = ["top", "about", "skills", "projects", "education", "agents", "contact"] as const;
 
@@ -12,6 +12,7 @@ const sectionIds = ["top", "about", "skills", "projects", "education", "agents",
 export default function PaletteDialog({ t }: { t: Dictionary["palette"] }) {
   const open = usePrefs((p) => p.paletteOpen);
   const motion = usePrefs((p) => p.motion);
+  const theme = usePrefs((p) => p.theme);
   const router = useRouter();
 
   const close = () => prefs.set({ paletteOpen: false });
@@ -35,7 +36,7 @@ export default function PaletteDialog({ t }: { t: Dictionary["palette"] }) {
       open={open}
       onOpenChange={(o) => prefs.set({ paletteOpen: o })}
       label={t.label}
-      overlayClassName="fixed inset-0 z-[80] bg-ink/25 backdrop-blur-sm"
+      overlayClassName="fixed inset-0 z-[80] bg-scrim backdrop-blur-sm"
       contentClassName="fixed z-[90] w-full overflow-hidden bg-cream shadow-lift outline-none focus-visible:outline-none
         bottom-0 left-0 rounded-t-[2rem] pb-[env(safe-area-inset-bottom)]
         sm:bottom-auto sm:left-1/2 sm:top-[18vh] sm:max-w-xl sm:-translate-x-1/2 sm:rounded-[2rem] sm:pb-0"
@@ -106,6 +107,9 @@ export default function PaletteDialog({ t }: { t: Dictionary["palette"] }) {
           >
             {t.jump}
           </Item>
+          <Item onSelect={run(() => setTheme(theme === "dark" ? "light" : "dark"))} icon={theme === "dark" ? "☀" : "☾"}>
+            {theme === "dark" ? t.themeLight : t.themeDark}
+          </Item>
           <Item onSelect={run(() => setMotionOverride(!motion))} icon={motion ? "◐" : "◑"}>
             {motion ? t.motionOff : t.motionOn}
           </Item>
@@ -138,9 +142,9 @@ function Item({
   return (
     <Command.Item
       onSelect={onSelect}
-      className="flex min-h-12 cursor-pointer items-center gap-3 rounded-2xl px-3 text-base text-ink data-[selected=true]:bg-lavender/45"
+      className="flex min-h-12 cursor-pointer items-center gap-3 rounded-2xl px-3 text-base text-ink data-[selected=true]:bg-lavender/45 dark:data-[selected=true]:bg-lavender dark:data-[selected=true]:text-on-pastel"
     >
-      <span aria-hidden className="grid size-8 place-items-center rounded-xl bg-white font-mono text-sm shadow-soft">
+      <span aria-hidden className="grid size-8 place-items-center rounded-xl bg-surface font-mono text-sm shadow-soft">
         {icon}
       </span>
       {children}

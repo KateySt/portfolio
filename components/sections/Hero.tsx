@@ -3,7 +3,7 @@ import { fmt, rich } from "@/i18n/format";
 import { RobotAnchor } from "../RobotAnchor";
 import { ButtonLink } from "../ui";
 
-const kbd = "rounded-md bg-white/80 px-1.5 py-0.5 shadow-soft";
+const kbd = "rounded-md bg-surface/80 px-1.5 py-0.5 shadow-soft";
 
 export async function Hero() {
   const { dict, profile } = await getContent();
@@ -16,7 +16,7 @@ export async function Hero() {
       className="container-page relative grid min-h-svh items-center gap-6 pb-12 pt-24 md:grid-cols-[1.1fr_0.9fr] md:gap-10 short:min-h-0 short:grid-cols-[1.25fr_0.75fr] short:gap-4 short:pb-8 short:pt-20"
     >
       <div className="relative z-10 order-2 md:order-1 short:order-1">
-        <p className="mb-5 inline-flex items-center gap-2 rounded-full bg-white/75 px-3.5 py-1.5 text-sm font-medium text-ink-soft shadow-soft short:mb-3">
+        <p className="mb-5 inline-flex items-center gap-2 rounded-full bg-surface/75 px-3.5 py-1.5 text-sm font-medium text-ink-soft shadow-soft short:mb-3">
           <span className="relative flex size-2.5">
             <span className="absolute inline-flex size-full animate-ping rounded-full bg-mint-deep opacity-60" />
             <span className="relative inline-flex size-2.5 rounded-full bg-mint-deep" />

@@ -39,7 +39,7 @@ export async function Skills() {
                 {g.items.map((s, i) => (
                   <li
                     key={s}
-                    className={`rounded-xl px-3 py-1.5 text-sm font-medium text-ink shadow-[inset_0_-3px_0_rgb(43_36_64_/_0.07)] ${accentSoft[g.accent]}`}
+                    className={`rounded-xl px-3 py-1.5 text-sm font-medium text-ink shadow-[inset_0_-3px_0_rgb(43_36_64_/_0.07)] dark:shadow-[inset_0_-3px_0_rgb(43_36_64_/_0.22)] ${accentSoft[g.accent]}`}
                     style={{ rotate: `${((i + gi) % 3) - 1}deg` }}
                   >
                     {s}

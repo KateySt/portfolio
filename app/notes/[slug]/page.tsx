@@ -67,7 +67,7 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
             <RobotAnchor pose="point" id="note" className="absolute -right-4 -top-10 hidden size-32 lg:block" />
             <p className="mt-6 font-mono text-sm text-ink-soft">
               {note.date}
-              {note.draft && <span className="ml-2 rounded-full bg-butter px-2 py-0.5 text-xs text-ink">{t.draft}</span>}
+              {note.draft && <span className="ml-2 rounded-full bg-butter px-2 py-0.5 text-xs text-on-pastel">{t.draft}</span>}
             </p>
             <h1 className="mt-2 font-display text-section font-bold tracking-tight text-balance lg:pr-36">{note.title}</h1>
             <div className="mt-4 flex flex-wrap gap-1.5">

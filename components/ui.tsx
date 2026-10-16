@@ -9,18 +9,30 @@ export const accentBg: Record<Accent, string> = {
   blush: "bg-blush",
 };
 
+// dark: a bright candy fill with dark text — washed-out pastels got lost on the dark page
+const onPastel = "dark:text-on-pastel dark:[&_.text-ink-soft]:text-on-pastel";
 export const accentSoft: Record<Accent, string> = {
-  lavender: "bg-lavender/40",
-  peach: "bg-peach/45",
-  mint: "bg-mint/45",
-  sky: "bg-sky/50",
-  butter: "bg-butter/60",
-  blush: "bg-blush/45",
+  lavender: `bg-lavender/40 dark:bg-lavender ${onPastel}`,
+  peach: `bg-peach/45 dark:bg-peach ${onPastel}`,
+  mint: `bg-mint/45 dark:bg-mint ${onPastel}`,
+  sky: `bg-sky/50 dark:bg-sky ${onPastel}`,
+  butter: `bg-butter/60 dark:bg-butter ${onPastel}`,
+  blush: `bg-blush/45 dark:bg-blush ${onPastel}`,
+};
+
+/** Decorative blurred blobs behind cards. */
+export const accentGlow: Record<Accent, string> = {
+  lavender: "bg-lavender/40 dark:bg-lavender/30",
+  peach: "bg-peach/45 dark:bg-peach/30",
+  mint: "bg-mint/45 dark:bg-mint/25",
+  sky: "bg-sky/50 dark:bg-sky/25",
+  butter: "bg-butter/60 dark:bg-butter/25",
+  blush: "bg-blush/45 dark:bg-blush/30",
 };
 
 export function Eyebrow({ children, accent = "lavender" }: { children: React.ReactNode; accent?: Accent }) {
   return (
-    <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/70 px-3.5 py-1.5 font-mono text-xs font-medium uppercase tracking-[0.14em] text-ink-soft shadow-soft">
+    <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-surface/70 px-3.5 py-1.5 font-mono text-xs font-medium uppercase tracking-[0.14em] text-ink-soft shadow-soft">
       <span className={`size-2 rounded-full ${accentBg[accent]}`} />
       {children}
     </p>
@@ -50,7 +62,7 @@ export function Pill({
   return (
     <span
       className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium text-ink ${
-        accent ? accentSoft[accent] : "bg-white/70"
+        accent ? accentSoft[accent] : "bg-surface/70"
       } ${className}`}
     >
       {children}
@@ -76,8 +88,8 @@ export function ButtonLink({
     "inline-flex min-h-12 max-w-full items-center justify-center gap-2 rounded-full px-6 py-2 text-center text-base font-semibold [overflow-wrap:anywhere] transition-[transform,background-color,box-shadow] duration-300 ease-out active:scale-[0.96]";
   const styles =
     variant === "solid"
-      ? "bg-ink text-cream shadow-lift hover:bg-[#3a3155]"
-      : "bg-white/75 text-ink shadow-soft hover:bg-white";
+      ? "bg-ink text-cream shadow-lift hover:bg-ink/85"
+      : "bg-surface/75 text-ink shadow-soft hover:bg-surface";
   return (
     <a
       href={href}

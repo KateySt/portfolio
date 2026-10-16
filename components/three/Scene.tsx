@@ -1,9 +1,11 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
-import { Canvas, useThree } from "@react-three/fiber";
+import { Suspense, useEffect, useRef, useState } from "react";
+import * as THREE from "three";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer } from "@react-three/drei";
 import { input, isLowPowerDevice, prefs, usePrefs } from "@/lib/interaction";
+import { night } from "@/lib/theme";
 import { Robot } from "./Robot";
 
 const IDLE_AFTER_MS = 2500;
@@ -30,6 +32,38 @@ function FrameDriver() {
   return null;
 }
 
+/* day → night: cooler lavender light, about as bright as by day — the robot must not sink into the dark page */
+const DAY = { sky: new THREE.Color("#fff6ee"), ground: new THREE.Color("#d9ccff"), key: new THREE.Color("#fff3ea"), back: new THREE.Color("#d8ccff") };
+const NIGHT = { sky: new THREE.Color("#e4d9ff"), ground: new THREE.Color("#8f7cd6"), key: new THREE.Color("#f1eaff"), back: new THREE.Color("#b8e6d2") };
+
+function Lights({ lite }: { lite: boolean }) {
+  const hemi = useRef<THREE.HemisphereLight>(null!);
+  const key = useRef<THREE.DirectionalLight>(null!);
+  const back = useRef<THREE.DirectionalLight>(null!);
+  const hemiDay = lite ? 1.45 : 1.15;
+  const last = useRef(-1);
+  useFrame(({ scene }) => {
+    const n = night.value;
+    if (n === last.current) return;
+    last.current = n;
+    hemi.current.color.lerpColors(DAY.sky, NIGHT.sky, n);
+    hemi.current.groundColor.lerpColors(DAY.ground, NIGHT.ground, n);
+    hemi.current.intensity = THREE.MathUtils.lerp(hemiDay, hemiDay * 1.05, n);
+    key.current.color.lerpColors(DAY.key, NIGHT.key, n);
+    key.current.intensity = THREE.MathUtils.lerp(1.7, 1.55, n);
+    back.current.color.lerpColors(DAY.back, NIGHT.back, n);
+    back.current.intensity = THREE.MathUtils.lerp(0.9, 1.3, n);
+    scene.environmentIntensity = THREE.MathUtils.lerp(1, 0.85, n);
+  });
+  return (
+    <>
+      <hemisphereLight ref={hemi} args={["#fff6ee", "#d9ccff", hemiDay]} />
+      <directionalLight ref={key} position={[-300, 500, 600]} intensity={1.7} color="#fff3ea" />
+      <directionalLight ref={back} position={[400, 120, -300]} intensity={0.9} color="#d8ccff" />
+    </>
+  );
+}
+
 export default function Scene() {
   const motion = usePrefs((p) => p.motion);
   const touch = usePrefs((p) => p.touch);
@@ -53,9 +87,7 @@ export default function Scene() {
       aria-hidden
     >
       {motion && <FrameDriver />}
-      <hemisphereLight args={["#fff6ee", "#d9ccff", lite ? 1.45 : 1.15]} />
-      <directionalLight position={[-300, 500, 600]} intensity={1.7} color="#fff3ea" />
-      <directionalLight position={[400, 120, -300]} intensity={0.9} color="#d8ccff" />
+      <Lights lite={lite} />
       {!lite && (
         <Environment resolution={64} frames={1}>
           <Lightformer intensity={1.4} position={[0, 4, 4]} scale={[8, 4, 1]} color="#fff4ec" />

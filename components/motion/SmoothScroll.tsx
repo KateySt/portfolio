@@ -8,15 +8,8 @@ import { input, prefs, usePrefs } from "@/lib/interaction";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const TINTS: Record<string, string> = {
-  cream: "#fff8f1",
-  lavender: "#f6f1ff",
-  peach: "#fff3ec",
-  mint: "#effaf5",
-  sky: "#f0f7fe",
-  butter: "#fffbe6",
-  blush: "#fff2f6",
-};
+// Section background tints live in globals.css (--tint-*) so they follow the light/dark theme.
+const TINTS = new Set(["cream", "lavender", "peach", "mint", "sky", "butter", "blush"]);
 
 /**
  * Lenis on mouse devices only (touch keeps native momentum scrolling),
@@ -71,7 +64,8 @@ export function SmoothScroll() {
     const ctx = gsap.context(() => {
       // background tint per section
       gsap.utils.toArray<HTMLElement>("[data-tint]").forEach((el) => {
-        const tint = TINTS[el.dataset.tint ?? "cream"] ?? TINTS.cream;
+        const name = el.dataset.tint ?? "cream";
+        const tint = `var(--tint-${TINTS.has(name) ? name : "cream"})`;
         ScrollTrigger.create({
           trigger: el,
           start: "top 55%",

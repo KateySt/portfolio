@@ -44,7 +44,7 @@ export default async function NotesPage() {
                 >
                   <p className="font-mono text-sm text-ink-soft">
                     {n.date}
-                    {n.draft && <span className="ml-2 rounded-full bg-butter px-2 py-0.5 text-xs text-ink">{t.draft}</span>}
+                    {n.draft && <span className="ml-2 rounded-full bg-butter px-2 py-0.5 text-xs text-on-pastel">{t.draft}</span>}
                   </p>
                   <h2 className="mt-2 font-display text-2xl font-bold text-balance">{n.title}</h2>
                   <p className="mt-3 text-ink-soft">{n.description}</p>

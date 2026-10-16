@@ -4,6 +4,7 @@ import { SITE_URL } from "@/content/data";
 import { getContent } from "@/content/content";
 import { defaultLocale, ogLocales } from "@/i18n/config";
 import { ClientShell } from "@/components/ClientShell";
+import { THEME_COLORS, themeScript } from "@/lib/theme";
 import "./globals.css";
 import "./poster.css";
 
@@ -50,8 +51,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#fff8f1",
-  colorScheme: "light",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: THEME_COLORS.light },
+    { media: "(prefers-color-scheme: dark)", color: THEME_COLORS.dark },
+  ],
+  colorScheme: "light dark",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -60,10 +64,16 @@ export const viewport: Viewport = {
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const { dict } = await getContent();
   return (
+    // data-theme is replaced before first paint by the inline script below → suppressHydrationWarning
     <html
       lang={defaultLocale}
+      data-theme="light"
+      suppressHydrationWarning
       className={`${bricolage.variable} ${inter.variable} antialiased`}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="min-h-dvh">
         <a
           href="#main"

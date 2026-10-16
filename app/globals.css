@@ -4,32 +4,18 @@
 @custom-variant short (@media (max-height: 500px));
 @custom-variant touch (@media (pointer: coarse));
 @custom-variant mouse (@media (hover: hover) and (pointer: fine));
+/* theme is a data attribute on <html>, set before first paint by an inline script */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 @theme {
-  --color-cream: #fff8f1;
-  --color-cream-deep: #fbefe3;
-  --color-ink: #2b2440;
-  --color-ink-soft: #5a5170;
-  --color-lavender: #c9b8f5;
-  --color-lavender-deep: #a48ae8;
-  --color-peach: #ffc8b0;
-  --color-peach-deep: #f5a283;
-  --color-mint: #b8e6d2;
-  --color-mint-deep: #7fcfae;
-  --color-sky: #bfddf7;
-  --color-sky-deep: #8cc0ee;
-  --color-butter: #fff1a8;
-  --color-butter-deep: #f2d860;
-  --color-blush: #ffc6d9;
-  --color-blush-deep: #f59bbb;
+  /* text that sits on a solid pastel fill stays dark in both themes */
+  --color-on-pastel: #2b2440;
 
   --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", Menlo, Consolas, monospace;
 
   --radius-blob: 2rem;
-  --shadow-soft: 0 1px 2px rgb(43 36 64 / 0.04), 0 8px 24px -8px rgb(43 36 64 / 0.12);
-  --shadow-lift: 0 2px 4px rgb(43 36 64 / 0.05), 0 18px 40px -12px rgb(43 36 64 / 0.22);
 
   --text-hero: clamp(2.6rem, 1.6rem + 5vw, 6rem);
   --text-hero--line-height: 0.95;
@@ -37,10 +23,117 @@
   --text-section--line-height: 1.02;
 }
 
-:root {
+/* Theme-dependent tokens: utilities read the variables, so switching
+   data-theme recolors everything without re-rendering anything. */
+@theme inline {
+  --color-cream: var(--c-page);
+  --color-ink: var(--c-ink);
+  --color-ink-soft: var(--c-ink-soft);
+  --color-surface: var(--c-surface);
+  --color-scrim: var(--c-scrim);
+  --color-code: var(--c-code);
+  --color-code-fg: var(--c-code-fg);
+  --color-lavender: var(--c-lavender);
+  --color-peach: var(--c-peach);
+  --color-mint: var(--c-mint);
+  --color-sky: var(--c-sky);
+  --color-butter: var(--c-butter);
+  --color-blush: var(--c-blush);
+  --color-lavender-deep: var(--c-lavender-deep);
+  --color-peach-deep: var(--c-peach-deep);
+  --color-mint-deep: var(--c-mint-deep);
+  --color-sky-deep: var(--c-sky-deep);
+  --color-butter-deep: var(--c-butter-deep);
+  --color-blush-deep: var(--c-blush-deep);
+  --shadow-soft: 0 1px 2px rgb(var(--c-shadow) / var(--c-shadow-a1)), 0 8px 24px -8px rgb(var(--c-shadow) / var(--c-shadow-a2));
+  --shadow-lift: 0 2px 4px rgb(var(--c-shadow) / var(--c-shadow-a1)), 0 18px 40px -12px rgb(var(--c-shadow) / var(--c-shadow-a3));
+}
+
+:root,
+[data-theme="light"] {
   color-scheme: light;
-  /* scroll-driven section tint, updated from JS (falls back to cream) */
-  --page-tint: var(--color-cream);
+  --c-page: #fff8f1;
+  --c-ink: #2b2440;
+  --c-ink-soft: #5a5170;
+  --c-surface: #ffffff;
+  --c-scrim: rgb(43 36 64 / 0.25);
+  --c-code: #2b2440;
+  --c-code-fg: #fff8f1;
+  --c-lavender: #c9b8f5;
+  --c-peach: #ffc8b0;
+  --c-mint: #b8e6d2;
+  --c-sky: #bfddf7;
+  --c-butter: #fff1a8;
+  --c-blush: #ffc6d9;
+  --c-lavender-deep: #a48ae8;
+  --c-peach-deep: #f5a283;
+  --c-mint-deep: #7fcfae;
+  --c-sky-deep: #8cc0ee;
+  --c-butter-deep: #f2d860;
+  --c-blush-deep: #f59bbb;
+  --c-shadow: 43 36 64;
+  --c-shadow-a1: 0.04;
+  --c-shadow-a2: 0.12;
+  --c-shadow-a3: 0.22;
+  --c-card: rgb(255 255 255 / 0.62);
+  --c-card-flat: rgb(255 255 255 / 0.78);
+  --c-card-border: rgb(255 255 255 / 0.8);
+  --c-grain-blend: multiply;
+  --c-grain-opacity: 0.35;
+  /* section background tints (scroll-driven) */
+  --tint-cream: #fff8f1;
+  --tint-lavender: #f6f1ff;
+  --tint-peach: #fff3ec;
+  --tint-mint: #effaf5;
+  --tint-sky: #f0f7fe;
+  --tint-butter: #fffbe6;
+  --tint-blush: #fff2f6;
+}
+
+/* Night: deep plum instead of black. Pastels get more saturated and brighter
+   ("neon candy") so they don't sink into the dark page; text on them stays dark. */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --c-page: #16121f;
+  --c-ink: #f3eeff;
+  --c-ink-soft: #c4bbd9;
+  --c-surface: #2a2339;
+  --c-scrim: rgb(8 6 14 / 0.6);
+  --c-code: #0f0c16;
+  --c-code-fg: #f3eeff;
+  --c-lavender: #b89cff;
+  --c-peach: #ffa47f;
+  --c-mint: #6fe3b4;
+  --c-sky: #85c5ff;
+  --c-butter: #ffe36b;
+  --c-blush: #ff92bd;
+  --c-lavender-deep: #c3a9ff;
+  --c-peach-deep: #ffaa86;
+  --c-mint-deep: #74ebbb;
+  --c-sky-deep: #8fcbff;
+  --c-butter-deep: #ffe470;
+  --c-blush-deep: #ff9cc5;
+  --c-shadow: 0 0 0;
+  --c-shadow-a1: 0.25;
+  --c-shadow-a2: 0.35;
+  --c-shadow-a3: 0.5;
+  --c-card: rgb(42 35 57 / 0.55);
+  --c-card-flat: rgb(42 35 57 / 0.88);
+  --c-card-border: rgb(255 255 255 / 0.07);
+  --c-grain-blend: soft-light;
+  --c-grain-opacity: 0.25;
+  --tint-cream: #16121f;
+  --tint-lavender: #1b1529;
+  --tint-peach: #1f151b;
+  --tint-mint: #121c1b;
+  --tint-sky: #121a25;
+  --tint-butter: #1c1912;
+  --tint-blush: #1f1421;
+}
+
+:root {
+  /* scroll-driven section tint, updated from JS (falls back to the page color) */
+  --page-tint: var(--tint-cream);
   --safe-l: env(safe-area-inset-left, 0px);
   --safe-r: env(safe-area-inset-right, 0px);
 }
@@ -57,7 +150,9 @@ body {
   background: var(--page-tint);
   color: var(--color-ink);
   font-family: var(--font-sans);
-  transition: background-color 0.8s ease;
+  transition:
+    background-color 0.8s ease,
+    color 0.4s ease;
   overflow-x: clip;
 }
 
@@ -68,8 +163,8 @@ body::before {
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  opacity: 0.35;
-  mix-blend-mode: multiply;
+  opacity: var(--c-grain-opacity);
+  mix-blend-mode: var(--c-grain-blend);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .17 0 0 0 0 .14 0 0 0 0 .25 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
@@ -83,7 +178,7 @@ body::before {
 
 ::selection {
   background: var(--color-lavender);
-  color: var(--color-ink);
+  color: var(--color-on-pastel);
 }
 
 /* in the base layer so utilities (e.g. focus-visible:outline-none) can override it —
@@ -114,16 +209,16 @@ body::before {
 
 @utility card-soft {
   border-radius: var(--radius-blob);
-  background: rgb(255 255 255 / 0.62);
+  background: var(--c-card);
   /* no manual -webkit- copy: the CSS compiler adds prefixes itself, and with
      both present it kept only the prefixed one, which Chrome ignores */
   backdrop-filter: blur(10px);
   box-shadow: var(--shadow-soft);
-  border: 1px solid rgb(255 255 255 / 0.8);
+  border: 1px solid var(--c-card-border);
   /* backdrop blur is re-rendered every scroll frame; on touch devices use a
      slightly more opaque flat fill instead — looks nearly identical */
   @media (pointer: coarse) {
-    background: rgb(255 255 255 / 0.78);
+    background: var(--c-card-flat);
     backdrop-filter: none;
   }
 }
