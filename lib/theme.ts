@@ -38,9 +38,11 @@ export function applyTheme(theme: Theme) {
   });
 }
 
+/** Only a choice that differs from the OS is stored; picking the OS theme goes back to following it. */
 export function persistTheme(theme: Theme) {
   try {
-    localStorage.setItem(THEME_KEY, theme);
+    if (theme === systemTheme()) localStorage.removeItem(THEME_KEY);
+    else localStorage.setItem(THEME_KEY, theme);
   } catch {
     /* private mode — the choice just won't survive a reload */
   }

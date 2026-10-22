@@ -141,7 +141,7 @@ export function setMotionOverride(on: boolean | null) {
   recomputeMotion();
 }
 
-/** Toggle / ⌘K: an explicit choice is remembered and stops following the OS. */
+/** Toggle / ⌘K: a choice that differs from the OS is remembered; picking the OS theme follows it again. */
 export function setTheme(theme: Theme) {
   persistTheme(theme);
   applyTheme(theme);
